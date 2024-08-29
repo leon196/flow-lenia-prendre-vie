@@ -63,6 +63,28 @@ dom_label.textContent = "";
 // print label content
 control.callbacks['clic'] = () => { console.log(dom_label.textContent); }
 
+// gui
+var gui = new dat.GUI();
+// gui.useLocalStorage = true;
+// var folder1 = gui.addFolder('Flow Field');
+lenia.settings = {
+	velocitySpeed: 1,
+	gradientSpeed: 0.25,
+	colorDNA: 0.,
+	spawnEdge: true,
+	blendImageInGradient: false,
+	blendImageInLenia: false,
+	reset: () => { lenia.reset() },
+}
+gui.add(lenia.settings, 'velocitySpeed', 0, 1, 0.01);
+gui.add(lenia.settings, 'gradientSpeed', 0, 1, 0.01);
+gui.add(lenia.settings, 'colorDNA', 0, 1, 0.01);
+gui.add(lenia.settings, 'spawnEdge');
+gui.add(lenia.settings, 'blendImageInGradient');
+gui.add(lenia.settings, 'blendImageInLenia');
+gui.add(lenia.settings, 'reset');
+gui.remember(lenia.settings);
+
 let zoomBase=1.;
 let zoomExp=0;
 let frameAnim=animate(()=>{
@@ -92,8 +114,8 @@ let frameAnim=animate(()=>{
 	{
 		// label position
 		const mouse = control.mousePos();
-		dom_label.style.left = (10+mouse[0]) + "px";
-		dom_label.style.top = (10+mouse[1]) + "px";
+		// dom_label.style.left = (10+mouse[0]) + "px";
+		// dom_label.style.top = (10+mouse[1]) + "px";
 		
 		// read back pixel dna
 		const read = new Float32Array(4);

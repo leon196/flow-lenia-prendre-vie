@@ -15,6 +15,7 @@ class RenderShader extends FragShader{
 				uniform vec2 camPos;
 				uniform vec4 dnaSelect;
 				uniform float camZoom;
+				uniform float colorDNA;
 
 				in vec2 pos;
 				out vec4 outColor;
@@ -64,8 +65,9 @@ class RenderShader extends FragShader{
 
 					// float g = smoothstep(.0,.5,lenia.x);
 					// outColor = vec4(vec3(lenia.x),1);
-					vec3 tint = hash44(dna).rgb;
-					tint = all(equal(dna, dnaSelect)) ? tint : vec3(1);
+					vec3 palette = hash44(dna).rgb;
+					vec3 tint = all(equal(dna, dnaSelect)) ? palette : vec3(1);
+					tint = mix(tint, palette, colorDNA);
 					// vec3 shade = gammaCorrect(vec3(lenia1.x));
 					vec3 shade = vec3(atan(lenia1.x));
 					outColor = vec4(shade*tint,1.);
@@ -85,7 +87,7 @@ class RenderShader extends FragShader{
 			`,
 		);
 	}
-	run(cam,imgSize,canvasSize,leniaMaterials,dnaTex,gradientTex,imageTex,dnaSelect){
+	run(cam,imgSize,canvasSize,leniaMaterials,dnaTex,gradientTex,imageTex,dnaSelect,settings){
 		this.uniforms={
 			camZoom:cam.zoom,
 			camPos:cam.pos,
@@ -98,6 +100,7 @@ class RenderShader extends FragShader{
 			gradientTex:gradientTex.tex,
 			imageTex:imageTex.tex,
 			dnaSelect:dnaSelect,
+			colorDNA:settings.colorDNA,
 		};
 		super.run();
 	}

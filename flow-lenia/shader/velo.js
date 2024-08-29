@@ -10,6 +10,7 @@ class VeloShader extends FragShader{
 				uniform sampler2D veloTex;
 				uniform vec2 size;
 				uniform float t;
+				uniform float gradientSpeed, velocitySpeed;
 				in vec2 pos;
 				out vec4 outColor;
 
@@ -17,9 +18,9 @@ class VeloShader extends FragShader{
 					vec2 pos2=pos*vec2(.5,.5)+.5;
 					ivec2 coord2=ivec2(pos2*size);
 					vec2 v=texelFetch(veloTex,coord2,0).xy
-						// *0.
+						*velocitySpeed
 						+texelFetch(gradientTex,coord2,0).xy
-						*.25;
+						*gradientSpeed;
 					v/=max(length(v),1.);
 					// v*=0.99;
 					outColor=vec4(v,0.,0.);
@@ -32,12 +33,14 @@ class VeloShader extends FragShader{
 		);
 		this.t=0;
 	}
-	run(gradientTex,veloTexPP){
+	run(gradientTex,veloTexPP,settings){
 		this.uniforms={
 			gradientTex:gradientTex.tex,
 			veloTex:veloTexPP.tex,
 			size:veloTexPP.size,
-			t:this.t
+			t:this.t,
+			gradientSpeed:settings.gradientSpeed,
+			velocitySpeed:settings.velocitySpeed,
 		};
 		this.t++;
 		this.attachments=[

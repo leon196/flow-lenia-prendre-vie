@@ -23,6 +23,7 @@ class FlowShader extends FragShader{
 				uniform vec2 canvasSize;
 				uniform vec2 camPos;
 				uniform float camZoom;
+				uniform bool spawnEdge;
 
 				in vec2 pos;
 				
@@ -114,18 +115,19 @@ class FlowShader extends FragShader{
 					}else if(updateDna){
 						vec2 border=size-mutationBorderWidth;
 						vec2 borderPos=abs(pos*size);
-						bool spawn = valDraw.z>.5||borderPos.x>=border.x||borderPos.y>=border.y;
+						bool spawn = borderPos.x>=border.x||borderPos.y>=border.y;
+						spawn = spawn && spawnEdge;
 						// bool spawn = hash13(vec3(floor(pos2*size), tick)) > .999;
 						// bool spawn = texture(imageTex, pos2).r > .9;
-						// if (spawn)
-						// {
-						// 	//mutate
-						// 	int initBlockSize=50;
-						// 	// outColor2=floor(hash42(vec2(coord2/initBlockSize)+rand)*maxLength);
-						// 	outColor2=floor(hash42(vec2(coord2)+rand)*maxLength);
-						// 	outColor0.x+=mutationBorderStrength;
-						// }
-						// else
+						if (spawn)
+						{
+							//mutate
+							int initBlockSize=50;
+							outColor2=floor(hash42(vec2(coord2/initBlockSize)+rand)*maxLength);
+							// outColor2=floor(hash42(vec2(coord2)+rand)*maxLength);
+							outColor0.x+=mutationBorderStrength;
+						}
+						else
 						{
 							outColor2=texelFetch(dnaTex,bestCoord,0);//texelFetch(veloTex,coord2,0);
 						}
@@ -137,7 +139,7 @@ class FlowShader extends FragShader{
 			`,
 		);
 	}
-	run(updateDna,maxDnaLength,cam,imgSize,canvasSize,leniaTexPP,veloTexPP,dnaTexPP,drawTex,imageTex){
+	run(updateDna,maxDnaLength,cam,imgSize,canvasSize,leniaTexPP,veloTexPP,dnaTexPP,drawTex,imageTex,settings){
 		this.uniforms={
 			camZoom:cam.zoom,
 			camPos:cam.pos,
@@ -155,6 +157,7 @@ class FlowShader extends FragShader{
 			maxLength:maxDnaLength,
 			mutationBorderWidth:(time%mutationBorderDelay==0)?mutationBorderWidth:0,
 			mutationBorderStrength,
+			spawnEdge:settings.spawnEdge,
 		};
 		this.attachments=[
 			{
