@@ -47,6 +47,16 @@ let SHADER_FUNCS={
 			return fract((p4.xxyz+p4.yzzw)*p4.zywx);
 
 		}
+
+		// Dave Hoskins
+		// https://www.shadertoy.com/view/XdGfRR
+		vec3 hash44(vec4 p)
+		{
+			uvec4 q = uvec4(ivec4(p)) * uvec4(1597334673U, 3812015801U, 2798796415U, 1979697957U);
+			q = (q.x ^ q.y ^ q.z ^ q.w)*uvec4(1597334673U, 3812015801U, 2798796415U, 1979697957U);
+			return vec3(q) * 2.328306437080797e-10;
+		}
+
 	`,
 	GAMMA:glsl`
 		vec3 gammaCorrect(vec3 col){

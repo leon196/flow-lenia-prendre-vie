@@ -35,6 +35,8 @@ class GradientShader extends FragShader{
 					vec2 sobel=vec2(sobelX,sobelY);
 
 					outColor=vec4(sobel.x,sobel.y,0.,0.);
+
+					// outColor=texture(affinityTex,pos2);
 				}
 			`,
 		);

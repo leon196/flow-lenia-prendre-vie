@@ -48,6 +48,11 @@ let imageTex=new Texture({
 });
 let time=0;
 
+let update=true;
+
+const key_space = 32;
+control.callbacks[key_space] = () => { update = !update; }
+
 let zoomBase=1.2;
 let zoomExp=0;
 let frameAnim=animate(()=>{
@@ -69,24 +74,29 @@ let frameAnim=animate(()=>{
 
 	if(control.mouseDown()){
 		display.noStroke();
-		if(control.mouseDown("l")){
-			//add mass
-			display.setFill(rgb(0,.5,0,.1));
-			display.circ(display.view.transformInv(control.mousePos()),100);
-		}
-		if(control.mouseDown("m")){
-			//mutate
-			display.setFill(rgb(0.,0,1,.1));
-			display.circ(display.view.transformInv(control.mousePos()),95);
-		}
-		if(control.mouseDown("r")){
-			//remove mass
-			display.setFill(rgb(5,.0,0,.1));
-			display.circ(display.view.transformInv(control.mousePos()),90);
-		}
+		// if(control.mouseDown("l")){
+		// 	//add mass
+		// 	display.setFill(rgb(0,.5,0,.1));
+		// 	display.circ(display.view.transformInv(control.mousePos()),100);
+		// }
+		// if(control.mouseDown("m")){
+		// 	//mutate
+		// 	display.setFill(rgb(0.,0,1,.1));
+		// 	display.circ(display.view.transformInv(control.mousePos()),95);
+		// }
+		// if(control.mouseDown("r")){
+		// 	//remove mass
+		// 	display.setFill(rgb(5,.0,0,.1));
+		// 	display.circ(display.view.transformInv(control.mousePos()),90);
+		// }
 		// control.mouseDown=false;
 	}
 
 	canvasTex.update(canvasElm);
-	lenia.run(display,canvasTex,imageTex);
+
+	if (update)
+	{
+		lenia.run(display,canvasTex,imageTex);
+	}
+
 },1,true).start();

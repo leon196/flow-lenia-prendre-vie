@@ -10,8 +10,10 @@ class FlowShader extends FragShader{
 				uniform sampler2D veloTex;
 				uniform sampler2D dnaTex;
 				uniform sampler2D drawTex;
+				uniform sampler2D imageTex;
 				uniform vec2 size;
 				uniform bool updateDna;
+				uniform float tick;
 				uniform float rand;
 				uniform float maxLength;
 				uniform float mutationBorderWidth;
@@ -112,12 +114,19 @@ class FlowShader extends FragShader{
 					}else if(updateDna){
 						vec2 border=size-mutationBorderWidth;
 						vec2 borderPos=abs(pos*size);
-						if(valDraw.z>.5||borderPos.x>=border.x||borderPos.y>=border.y){
-							//mutate
-							int initBlockSize=50;
-							outColor2=floor(hash42(vec2(coord2/initBlockSize)+rand)*maxLength);
-							outColor0.x+=mutationBorderStrength;
-						}else{
+						bool spawn = valDraw.z>.5||borderPos.x>=border.x||borderPos.y>=border.y;
+						// bool spawn = hash13(vec3(floor(pos2*size), tick)) > .999;
+						// bool spawn = texture(imageTex, pos2).r > .9;
+						// if (spawn)
+						// {
+						// 	//mutate
+						// 	int initBlockSize=50;
+						// 	// outColor2=floor(hash42(vec2(coord2/initBlockSize)+rand)*maxLength);
+						// 	outColor2=floor(hash42(vec2(coord2)+rand)*maxLength);
+						// 	outColor0.x+=mutationBorderStrength;
+						// }
+						// else
+						{
 							outColor2=texelFetch(dnaTex,bestCoord,0);//texelFetch(veloTex,coord2,0);
 						}
 					}else{
@@ -128,7 +137,7 @@ class FlowShader extends FragShader{
 			`,
 		);
 	}
-	run(updateDna,maxDnaLength,cam,imgSize,canvasSize,leniaTexPP,veloTexPP,dnaTexPP,drawTex){
+	run(updateDna,maxDnaLength,cam,imgSize,canvasSize,leniaTexPP,veloTexPP,dnaTexPP,drawTex,imageTex){
 		this.uniforms={
 			camZoom:cam.zoom,
 			camPos:cam.pos,
@@ -138,9 +147,11 @@ class FlowShader extends FragShader{
 			veloTex:veloTexPP.tex,
 			dnaTex:dnaTexPP.tex,
 			drawTex:drawTex.tex,
+			imageTex:imageTex.tex,
 			size:leniaTexPP.size,
 			updateDna,
 			rand:rand(),
+			tick: Math.floor(time*60),
 			maxLength:maxDnaLength,
 			mutationBorderWidth:(time%mutationBorderDelay==0)?mutationBorderWidth:0,
 			mutationBorderStrength,

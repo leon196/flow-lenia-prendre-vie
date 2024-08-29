@@ -10,6 +10,7 @@ class GeneInitShader extends FragShader{
 				uniform vec2 size;
 				uniform float rand;
 				uniform float groupLength;
+				uniform sampler2D image;
 
 				in vec2 pos;
 				out vec4 outColor;
@@ -22,7 +23,9 @@ class GeneInitShader extends FragShader{
 
 					float idx=float(coord2.x)+float(coord2.y)*size.x;
 					if(mod(idx,groupLength)!=0.){
-						outColor=hash42(vec2(coord2)+rand);
+						// outColor=hash42(vec2(coord2)+rand);
+						outColor=hash42(vec2(coord2));
+						// outColor = hash42(vec2(floor(texture(image, pos2).r*100.),0.));
 					}else{
 						outColor=vec4(0.);
 					}
@@ -30,9 +33,10 @@ class GeneInitShader extends FragShader{
 			`,
 		);
 	}
-	run(geneTex,groupLength){
+	run(geneTex, imgTex, groupLength){
 		this.uniforms={
 			size:geneTex.size,
+			image:imgTex,
 			rand:rand(),
 			groupLength,
 		};
@@ -58,6 +62,7 @@ class DnaInitShader extends FragShader{
 				uniform vec2 size;
 				uniform float rand;
 				uniform float maxLength;
+				uniform sampler2D image;
 
 				in vec2 pos;
 				out vec4 outColor;
@@ -69,14 +74,18 @@ class DnaInitShader extends FragShader{
 					ivec2 coord2=ivec2(pos2*size);
 
 					int initBlockSize=100;
-					outColor=floor(hash42(vec2(coord2/initBlockSize)+rand)*maxLength);
+					// outColor=floor(hash42(vec2(coord2/initBlockSize)+rand)*maxLength);
+					// outColor=floor(hash42(vec2(coord2/initBlockSize))*maxLength);
+					outColor=floor(vec4(coord2/200+10000,10000,1000));
+					// outColor=floor(hash42(vec2(floor(texture(image, pos2).r*10.))+rand)*maxLength);
 				}
 			`,
 		);
 	}
-	run(dnaTex,maxLength){
+	run(dnaTex,imgTex,maxLength){
 		this.uniforms={
 			size:dnaTex.size,
+			image:imgTex,
 			rand:rand(),
 			maxLength,
 		};

@@ -5,10 +5,10 @@ class RenderShader extends FragShader{
 				#define TAU ${TAU}
 				precision highp float;
 
-				uniform sampler2D tex;
-				uniform sampler2D tex2;
-				uniform sampler2D tex3;
-				uniform sampler2D tex4;
+				uniform sampler2D leniaTex;
+				uniform sampler2D dnaTex;
+				uniform sampler2D gradientTex;
+				uniform sampler2D imageTex;
 				uniform vec2 imgSize;
 				uniform vec2 canvasSize;
 				uniform vec2 camPos;
@@ -18,6 +18,7 @@ class RenderShader extends FragShader{
 				out vec4 outColor;
 
 				${SHADER_FUNCS.GAMMA}
+				${SHADER_FUNCS.HASH}
 				
 				vec3 rgb2hsv(vec3 c){
 					vec4 K = vec4(0.0, -1.0 / 3.0, 2.0 / 3.0, -1.0);
@@ -43,22 +44,30 @@ class RenderShader extends FragShader{
 						min(ratio.x/ratio.y,1.),
 						min(ratio.y/ratio.x,1.)
 					)/camZoom-camPos;
-					vec4 col1=texture(tex,pos2);
-					vec4 col2=texture(tex2,pos2);
-					vec4 col3=texture(tex3,pos2);
-					vec4 col4=texture(tex4,vec2(pos2.x,1.-pos2.y));
-					// outColor=vec4(col1.x,col4.x,0.,1.);
+					vec4 lenia = texture(leniaTex,pos2);
+					vec4 dna = texture(dnaTex,pos2);
+					vec4 gradient = texture(gradientTex,pos2);
+					vec4 image = texture(imageTex,vec2(pos2.x,1.-pos2.y));
+					// outColor=vec4(lenia.x,image.x,0.,1.);
 					
-					outColor=vec4(
-						gammaCorrect(
-							hsv2rgb(vec3(col2.x/100000.,.9,1.))*2.
-							*col1.x
-						)
-						*((col3.x+1.)/4.+(col3.y+1.)/4.),
-						1.
-					);
+					float x = dna.x/1000.;
+					x = abs(fract(x)-.5)*2.;
 
-					// outColor=vec4(col3.x,col3.y,0.,1.);
+					// outColor=vec4(
+					// 	gammaCorrect(vec3(lenia.x)),
+					// 	// *((gradient.x+1.)/4.+(gradient.y+1.)/4.),
+					// 	1.
+					// );
+
+					// float g = smoothstep(.0,.5,lenia.x);
+					// outColor = vec4(vec3(lenia.x),1);
+					outColor = vec4(hash44(dna).rgb*gammaCorrect(vec3(lenia.x)),1.);
+					// outColor = vec4(velo.xyz*100.,1);
+					// outColor = vec4(gammaCorrect(vec3(col1.x)),1.);
+
+					// outColor=image;
+
+					// outColor=vec4(gradient.x,gradient.y,0.,1.);
 					// outColor=vec4(gammaCorrect(vec3(col1.x*2.,col1.x*.1,col1.x*.002)),1);
 					// outColor=vec4(gammaCorrect(vec3(col1.x*1.)),1);
 					
@@ -69,16 +78,16 @@ class RenderShader extends FragShader{
 			`,
 		);
 	}
-	run(cam,imgSize,canvasSize,renderTex,render2Tex,render3Tex,render4Tex){
+	run(cam,imgSize,canvasSize,leniaTex,dnaTex,gradientTex,imageTex){
 		this.uniforms={
 			camZoom:cam.zoom,
 			camPos:cam.pos,
 			imgSize,
 			canvasSize,
-			tex:renderTex.tex,
-			tex2:render2Tex.tex,
-			tex3:render3Tex.tex,
-			tex4:render4Tex.tex,
+			leniaTex:leniaTex.tex,
+			dnaTex:dnaTex.tex,
+			gradientTex:gradientTex.tex,
+			imageTex:imageTex.tex,
 		};
 		super.run();
 	}
