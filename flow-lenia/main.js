@@ -19,6 +19,7 @@ let glCanvasElm=newElm("canvas");
 let gl=glCanvasElm.getContext("webgl2",{
 	premultipliedAlpha: true
 });
+
 gl.getExtension("EXT_color_buffer_float");
 gl.getExtension("EXT_float_blend");
 
@@ -36,7 +37,7 @@ let control=new Control();
 control.connect(canvasElm);
 
 let shaderManager=new ShaderManager();
-let lenia=new Lenia();
+let lenia=new Lenia(canvasElm.width, canvasElm.height);
 let canvasTex=new Texture({
 	src: canvasElm,
 	minMag: gl.NEAREST,
@@ -48,15 +49,23 @@ let imageTex=new Texture({
 });
 let time=0;
 
+// play/pause with key space
 let update=true;
-
 const key_space = 32;
 control.callbacks[key_space] = () => { update = !update; }
 
-let zoomBase=1.2;
+// label
+const dom_label = document.createElement("div");
+dom_label.classList.add("label");
+document.body.append(dom_label);
+dom_label.textContent = "";
+
+// print label content
+control.callbacks['clic'] = () => { console.log(dom_label.textContent); }
+
+let zoomBase=1.;
 let zoomExp=0;
 let frameAnim=animate(()=>{
-	display.clear();
 	time++;
 
 	let ratio=display.size.cln().div(lenia.size);
@@ -72,31 +81,31 @@ let frameAnim=animate(()=>{
 	
 	control.resetDelta();
 
-	if(control.mouseDown()){
-		display.noStroke();
-		// if(control.mouseDown("l")){
-		// 	//add mass
-		// 	display.setFill(rgb(0,.5,0,.1));
-		// 	display.circ(display.view.transformInv(control.mousePos()),100);
-		// }
-		// if(control.mouseDown("m")){
-		// 	//mutate
-		// 	display.setFill(rgb(0.,0,1,.1));
-		// 	display.circ(display.view.transformInv(control.mousePos()),95);
-		// }
-		// if(control.mouseDown("r")){
-		// 	//remove mass
-		// 	display.setFill(rgb(5,.0,0,.1));
-		// 	display.circ(display.view.transformInv(control.mousePos()),90);
-		// }
-		// control.mouseDown=false;
+	// if (update)
+	{
+		display.clear();
+		canvasTex.update(canvasElm);
+		lenia.run(update,display,canvasTex,imageTex);
 	}
 
-	canvasTex.update(canvasElm);
-
-	if (update)
+	if (control.mLDown)
 	{
-		lenia.run(display,canvasTex,imageTex);
+		// label position
+		const mouse = control.mousePos();
+		dom_label.style.left = (10+mouse[0]) + "px";
+		dom_label.style.top = (10+mouse[1]) + "px";
+		
+		// read back pixel dna
+		const read = new Float32Array(4);
+		const x = mouse[0];
+		const y = mouse[1];
+		lenia.dnaTexPP.readAt(x,y,gl.RGBA, gl.FLOAT,read);
+
+		// update label
+		dom_label.textContent = read[0] + ',' + read[1] + ',' + read[2] + ',' + read[3];
+
+		lenia.dnaSelect = read;
+
 	}
 
 },1,true).start();

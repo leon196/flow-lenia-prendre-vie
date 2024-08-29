@@ -38,7 +38,7 @@ class LeniaMaterial{
 	}
 }
 class Lenia{
-	constructor(){
+	constructor(width, height){
 		this.materials=[
 			new LeniaMaterial(),
 			// new LeniaMaterial(),
@@ -109,10 +109,12 @@ class Lenia{
 		const img=new Image();
 		img.src=imageSrc;
 
-		this.size=Vec(1,1);
+		this.size=Vec(width,height);
+
+		this.dnaSelect = [0,0,0,0];
 
 		img.onload=()=>{
-			this.size=Vec(img.width,img.height).scl(imageScale).flr();
+			// this.size=Vec(img.width,img.height).scl(imageScale).flr();
 			[
 				this.gradientTexPP,
 				this.motionTexPP,
@@ -131,44 +133,47 @@ class Lenia{
 		};
 		// console.log("dna",this.materials[0].read(4,gl.RGBA,gl.FLOAT,Float32Array));
 	}
-	run(display,drawTex,imageTex){
+	run(update,display,drawTex,imageTex){
 		shaderManager.resizeToDisplay();
-		
-		this.copyShader.run(imageTex,this.imgTex);
-		// console.log("copyShader")
-		this.gradientShader.run(this.imgTex,this.imgGradientTex);
 
-		this.materials.forEach((m,i,arr)=>{
-			let nextM=this.materials[(i+1)%this.materials.length];
-			this.leniaShader.run(
-				m.geneGroupLength,
-				m.geneTexPP,
-				this.dnaTexPP,
-				m.leniaTexPP,
-				nextM.affinityTexPP,
-			);
-			this.gradientShader.run(m.affinityTexPP,this.gradientTexPP);
+		if (update)
+		{
+			this.copyShader.run(imageTex,this.imgTex);
+			// console.log("copyShader")
+			this.gradientShader.run(this.imgTex,this.imgGradientTex);
 
-			// this.subShader.run(this.imgGradientTex,this.gradientTexPP);
-			// this.mixShader.run(.5,this.imgGradientTex,this.gradientTexPP);
-			
-			//These lines make it so that for every action there must be an equal and opposite reaction
-			if(this.balanceMotion){
-				this.motionCapacityShader.run(m.leniaTexPP,this.motionTexPP);
-				this.motionShader.run(this.gradientTexPP,this.motionTexPP);
-			}
-			this.viscosityShader.run(m.leniaTexPP,m.veloTexPP);
-			this.veloShader.run(this.gradientTexPP,m.veloTexPP);
+			this.materials.forEach((m,i,arr)=>{
+				let nextM=this.materials[(i+1)%this.materials.length];
+				this.leniaShader.run(
+					m.geneGroupLength,
+					m.geneTexPP,
+					this.dnaTexPP,
+					m.leniaTexPP,
+					nextM.affinityTexPP,
+				);
+				this.gradientShader.run(m.affinityTexPP,this.gradientTexPP);
 
-			// this.mixShader.run(.99,this.imgTex,m.leniaTexPP);
-		});
-		this.materials.forEach((m,i,arr)=>{
-			// this.flowShader.run(i==0,this.materials[0].geneMaxLength,display.view,this.size,display.size,m.leniaTexPP,m.veloTexPP,this.dnaTexPP,drawTex,imageTex);
-			this.flowShader.run(i==0,this.materials[0].geneMaxLength,display.view,this.size,display.size,m.leniaTexPP,m.veloTexPP,this.dnaTexPP,drawTex,imageTex);
-		});
+				this.subShader.run(this.imgGradientTex,this.gradientTexPP);
+				// this.mixShader.run(.9,this.imgGradientTex,this.gradientTexPP);
+				
+				//These lines make it so that for every action there must be an equal and opposite reaction
+				if(this.balanceMotion){
+					this.motionCapacityShader.run(m.leniaTexPP,this.motionTexPP);
+					this.motionShader.run(this.gradientTexPP,this.motionTexPP);
+				}
+				this.viscosityShader.run(m.leniaTexPP,m.veloTexPP);
+				this.veloShader.run(this.gradientTexPP,m.veloTexPP);
+
+				// this.mixShader.run(.99,this.imgTex,m.leniaTexPP);
+			});
+			this.materials.forEach((m,i,arr)=>{
+				// this.flowShader.run(i==0,this.materials[0].geneMaxLength,display.view,this.size,display.size,m.leniaTexPP,m.veloTexPP,this.dnaTexPP,drawTex,imageTex);
+				this.flowShader.run(i==0,this.materials[0].geneMaxLength,display.view,this.size,display.size,m.leniaTexPP,m.veloTexPP,this.dnaTexPP,drawTex,imageTex);
+			});
+		}
 		
 		if(this.size.x>1.||this.size.y>1.){
-			this.renderShader.run(display.view,this.size,display.size,this.materials[0].leniaTexPP,this.dnaTexPP,this.gradientTexPP,imageTex);
+			this.renderShader.run(display.view,this.size,display.size,this.materials,this.dnaTexPP,this.gradientTexPP,imageTex,this.dnaSelect);
 		}
 	}
 }

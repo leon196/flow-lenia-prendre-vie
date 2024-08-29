@@ -50,12 +50,40 @@ let SHADER_FUNCS={
 
 		// Dave Hoskins
 		// https://www.shadertoy.com/view/XdGfRR
-		vec3 hash44(vec4 p)
+		// vec3 hash44(vec4 p)
+		// {
+		// 	uvec4 q = uvec4(ivec4(p)) * uvec4(1597334673U, 3812015801U, 2798796415U, 1979697957U);
+		// 	q = (q.x ^ q.y ^ q.z ^ q.w)*uvec4(1597334673U, 3812015801U, 2798796415U, 1979697957U);
+		// 	return vec3(q) * 2.328306437080797e-10;
+		// }
+		// https://www.shadertoy.com/view/4djSRW
+		vec4 hash44(vec4 p4)
 		{
-			uvec4 q = uvec4(ivec4(p)) * uvec4(1597334673U, 3812015801U, 2798796415U, 1979697957U);
-			q = (q.x ^ q.y ^ q.z ^ q.w)*uvec4(1597334673U, 3812015801U, 2798796415U, 1979697957U);
-			return vec3(q) * 2.328306437080797e-10;
+			p4 = fract(p4  * vec4(.1031, .1030, .0973, .1099));
+			p4 += dot(p4, p4.wzxy+33.33);
+			return fract((p4.xxyz+p4.yzzw)*p4.zywx);
 		}
+
+		// same hash for coloring label
+		// const hash44 = (p4) =>
+		// {
+		// 	p4[0] = (p4[0] * .1031) % 1;
+		// 	p4[1] = (p4[1] * .1030) % 1;
+		// 	p4[2] = (p4[2] * .0973) % 1;
+		// 	p4[3] = (p4[3] * .1099) % 1;
+		// 	let p = new Vector(p4);
+		// 	const p2 = new Vector([p4[3]+33.33,p4[2]+33.33,p4[0]+33.33,p4[1]+33.33]);
+		// 	const dt = p.dot(p2);
+		// 	p[0] += dt;
+		// 	p[1] += dt;
+		// 	p[2] += dt;
+		// 	p[3] += dt;
+		// 	p4[0] = ((p[0]+p[1])*p[2])%1;
+		// 	p4[1] = ((p[0]+p[2])*p[1])%1;
+		// 	p4[2] = ((p[1]+p[2])*p[3])%1;
+		// 	p4[3] = ((p[2]+p[3])*p[0])%1;
+		// 	return p4;
+		// }
 
 	`,
 	GAMMA:glsl`

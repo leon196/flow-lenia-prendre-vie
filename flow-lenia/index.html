@@ -11,16 +11,17 @@
 	<link rel="stylesheet" href="main.css">
 </head>
 <body>
-	<script src="https://twgljs.org/dist/5.x/twgl-full.min.js"></script>
+	<script src="lib/twgl-full.min.js"></script>
 
-	<script src="https://cmx.deno.dev/cmx/0.02/math.js"></script>
-	<script src="https://cmx.deno.dev/cmx/0.02/vector.js"></script>
-	<script src="https://cmx.deno.dev/cmx/0.02/color.js"></script>
-	<script src="https://cmx.deno.dev/cmx/0.02/util.js"></script>
-	<script src="https://cmx.deno.dev/cmx/0.02/base.js"></script>
-	<script src="https://cmx.deno.dev/cmx/0.02/display.js"></script>
+	<script src="lib/math.js"></script>
+	<script src="lib/vector.js"></script>
+	<script src="lib/color.js"></script>
+	<script src="lib/util.js"></script>
+	<script src="lib/base.js"></script>
+	<script src="lib/display.js"></script>
 	<script src="lib/control.js"></script>
-	<script src="https://cmx.deno.dev/cmx/0.02/shader.js"></script>
+	<script src="lib/shader.js"></script>
+	
 	<script src="shader/common.js"></script>
 	<script src="shader/dna.js"></script>
 	<script src="shader/noise.js"></script>
@@ -35,5 +36,18 @@
 	<script src="lenia-core.js"></script>
 	<script src="settings.js"></script>
 	<script src="main.js"></script>
+
+	<style>
+		.label
+		{
+			pointer-events: none;
+			font-family: monospace;
+			color: white;
+			background-color: black;
+			z-index: 100;
+			position: fixed;
+			padding: 4px;
+		}
+	</style>
 </body>
 </html>

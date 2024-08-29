@@ -5,13 +5,15 @@ class RenderShader extends FragShader{
 				#define TAU ${TAU}
 				precision highp float;
 
-				uniform sampler2D leniaTex;
+				uniform sampler2D leniaTex1;
+				uniform sampler2D leniaTex2;
 				uniform sampler2D dnaTex;
 				uniform sampler2D gradientTex;
 				uniform sampler2D imageTex;
 				uniform vec2 imgSize;
 				uniform vec2 canvasSize;
 				uniform vec2 camPos;
+				uniform vec4 dnaSelect;
 				uniform float camZoom;
 
 				in vec2 pos;
@@ -44,7 +46,8 @@ class RenderShader extends FragShader{
 						min(ratio.x/ratio.y,1.),
 						min(ratio.y/ratio.x,1.)
 					)/camZoom-camPos;
-					vec4 lenia = texture(leniaTex,pos2);
+					vec4 lenia1 = texture(leniaTex1,pos2);
+					vec4 lenia2 = texture(leniaTex2,pos2);
 					vec4 dna = texture(dnaTex,pos2);
 					vec4 gradient = texture(gradientTex,pos2);
 					vec4 image = texture(imageTex,vec2(pos2.x,1.-pos2.y));
@@ -61,9 +64,13 @@ class RenderShader extends FragShader{
 
 					// float g = smoothstep(.0,.5,lenia.x);
 					// outColor = vec4(vec3(lenia.x),1);
-					outColor = vec4(hash44(dna).rgb*gammaCorrect(vec3(lenia.x)),1.);
+					vec3 tint = hash44(dna).rgb;
+					tint = all(equal(dna, dnaSelect)) ? tint : vec3(1);
+					// vec3 shade = gammaCorrect(vec3(lenia1.x));
+					vec3 shade = vec3(atan(lenia1.x));
+					outColor = vec4(shade*tint,1.);
 					// outColor = vec4(velo.xyz*100.,1);
-					// outColor = vec4(gammaCorrect(vec3(col1.x)),1.);
+					// outColor = vec4(gammaCorrect(vec3(lenia1.x,0,0)+vec3(0,0,lenia2.x)),1.);
 
 					// outColor=image;
 
@@ -78,16 +85,19 @@ class RenderShader extends FragShader{
 			`,
 		);
 	}
-	run(cam,imgSize,canvasSize,leniaTex,dnaTex,gradientTex,imageTex){
+	run(cam,imgSize,canvasSize,leniaMaterials,dnaTex,gradientTex,imageTex,dnaSelect){
 		this.uniforms={
 			camZoom:cam.zoom,
 			camPos:cam.pos,
 			imgSize,
 			canvasSize,
-			leniaTex:leniaTex.tex,
+			// leniaTex:leniaTex.tex,
+			leniaTex1: leniaMaterials[0].leniaTexPP.tex,
+			// leniaTex2: leniaMaterials[1].leniaTexPP.tex,
 			dnaTex:dnaTex.tex,
 			gradientTex:gradientTex.tex,
 			imageTex:imageTex.tex,
+			dnaSelect:dnaSelect,
 		};
 		super.run();
 	}
