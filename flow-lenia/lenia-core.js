@@ -81,6 +81,13 @@ class Lenia{
 			wrap: gl.REPEAT,
 			internalFormat: gl.RG32F,
 		});
+		this.renderTex=new Texture({
+			width: 1,
+			height: 1,
+			minMag: gl.NEAREST,
+			wrap: gl.REPEAT,
+			internalFormat: gl.RGBA32F,
+		});
 
 		this.geneInitShader=new GeneInitShader();
 		this.dnaInitShader=new DnaInitShader();
@@ -125,6 +132,7 @@ class Lenia{
 				this.dnaTexPP,
 				this.imgTex,
 				this.imgGradientTex,
+				this.renderTex,
 				...this.materials.flatMap(x=>[...x])
 			].forEach(t=>t.resize(this.size.x,this.size.y));
 			this.materials.forEach((m,i,arr)=>{
@@ -146,6 +154,7 @@ class Lenia{
 			this.dnaTexPP,
 			this.imgTex,
 			this.imgGradientTex,
+			this.renderTex,
 			...this.materials.flatMap(x=>[...x])
 		].forEach(t=>t.resize(this.size.x,this.size.y));
 		this.materials.forEach((m,i,arr)=>{
@@ -167,9 +176,9 @@ class Lenia{
 
 		if (update)
 		{
-			// this.copyShader.run(imageTex,this.imgTex);
-			const set = this.settings;
-			this.zoomShader.run(set.zoomScale, set.zoomAt, imageTex, this.imgTex);
+			this.copyShader.run(imageTex,this.imgTex);
+			// const set = this.settings;
+			// this.zoomShader.run(set.zoomScale, set.zoomAt, imageTex, this.imgTex);
 			// console.log("copyShader")
 			this.gradientShader.run(this.imgTex,this.imgGradientTex);
 
@@ -210,7 +219,7 @@ class Lenia{
 		}
 		
 		if(this.size.x>1.||this.size.y>1.){
-			this.renderShader.run(display.view,this.size,display.size,this.materials,this.dnaTexPP,this.gradientTexPP,imageTex,this.dnaSelect,this.settings);
+			this.renderShader.run(display.view,this.size,display.size,this.materials,this.dnaTexPP,this.gradientTexPP,imageTex,this.dnaSelect,this.settings,this.renderTex);
 		}
 	}
 }

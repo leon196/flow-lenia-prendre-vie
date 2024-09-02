@@ -36,17 +36,16 @@ display.view=new Cam(Vec(0,0),1.);
 let control=new Control();
 control.connect(canvasElm);
 
-const width = canvasElm.width;
-const height = canvasElm.height;
-
 let shaderManager=new ShaderManager();
 let lenia=new Lenia();
-let leniaZoom=new Lenia();
+let leniaLayer2=new Lenia();
 let canvasTex=new Texture({
 	src: canvasElm,
 	minMag: gl.NEAREST,
 	wrap: gl.REPEAT
 });
+
+let composeShader = new ComposeShader();
 
 let imageTex=new Texture({
 	src: imageSrc
@@ -76,16 +75,37 @@ settings.imageHD = () => {
 	img.onload = () => {
 		imageTex = new Texture({ src: img });
 		lenia.resize(img);
-		leniaZoom.resize(img);
+		leniaLayer2.resize(img);
 	}
 
 };
+
+// reset
 settings.reset = () => {
 	lenia.reset();
-	leniaZoom.reset();
+	leniaLayer2.reset();
 };
+
+// zoom
+let zoom = 1.;
+let offset = [0,0];
+
+settings.zoom = () => {
+	settings.zooming = !settings.zooming;
+	if (settings.zooming)
+	{
+		zoom = 2.;
+		offset = [0.5,0.5];
+	}
+	else
+	{
+		zoom = 1.;
+		offset = [0,0];
+	}
+};
+
 lenia.settings = settings;
-leniaZoom.settings = settings;
+leniaLayer2.settings = settings;
 
 // gui
 var gui = new dat.GUI();
@@ -98,12 +118,10 @@ gui.add(settings, 'spawnEdge');
 gui.add(settings, 'blendImageInGradient');
 gui.add(settings, 'blendImageInLenia');
 gui.add(settings, 'imageHD');
-gui.add(settings, 'zoom');
+gui.add(settings, 'zoom'); 
 gui.add(settings, 'reset'); 
 gui.remember(settings);
 
-let zoomBase=1.;
-let zoomExp=0;
 let frameAnim=animate(()=>{
 	time++;
 	
@@ -112,21 +130,15 @@ let frameAnim=animate(()=>{
 	display.clear();
 	canvasTex.update(canvasElm);
 
-	if (lenia.settings.zoom)
-	{
-		leniaZoom.settings.zoomScale = 2.;
-		leniaZoom.run(update,display,canvasTex,imageTex);
-	}
-	else
-	{
-		lenia.settings.zoomScale = 1.;
-		lenia.run(update,display,canvasTex,imageTex);
-	}
+	leniaLayer2.run(update,display,canvasTex,imageTex);
+	lenia.run(update,display,canvasTex,imageTex);
+
+	composeShader.run(display.view,lenia.size,display.size,zoom,offset,lenia.renderTex,leniaLayer2.renderTex);
 
 	// pick a specie
 	if (control.mLDown)
 	{
-		const l = lenia.settings.zoom ? leniaZoom : lenia;
+		const l = lenia.settings.zoom ? leniaLayer2 : lenia;
 
 		// label position
 		const mouse = control.mousePos();

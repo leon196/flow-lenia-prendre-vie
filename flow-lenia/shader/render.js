@@ -91,7 +91,7 @@ class RenderShader extends FragShader{
 			`,
 		);
 	}
-	run(cam,imgSize,canvasSize,leniaMaterials,dnaTex,gradientTex,imageTex,dnaSelect,settings){
+	run(cam,imgSize,canvasSize,leniaMaterials,dnaTex,gradientTex,imageTex,dnaSelect,settings,renderTex){
 		this.uniforms={
 			camZoom:cam.zoom,
 			camPos:cam.pos,
@@ -107,6 +107,12 @@ class RenderShader extends FragShader{
 			colorDNA:settings.colorDNA,
 			colorVariation:settings.colorVariation,
 		};
+		this.attachments=[
+			{
+				attachment:renderTex.tex,
+				...sizeObj(renderTex.size)
+			}
+		];
 		super.run();
 	}
 }

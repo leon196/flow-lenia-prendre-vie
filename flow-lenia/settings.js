@@ -23,7 +23,5 @@ const settings = {
 	spawnEdge: true,
 	blendImageInGradient: true,
 	blendImageInLenia: false,
-	zoomScale: 1.,
-	zoomAt: [0.5,0.5],
-	zoom: false,
+	zooming: false,
 }
