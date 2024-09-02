@@ -38,7 +38,7 @@ class LeniaMaterial{
 	}
 }
 class Lenia{
-	constructor(width, height){
+	constructor(){
 		this.materials=[
 			new LeniaMaterial(),
 			// new LeniaMaterial(),
@@ -98,6 +98,7 @@ class Lenia{
 		this.copyShader=new CopyShader();
 		this.addShader=new AddShader();
 		this.subShader=new SubShader();
+		this.zoomShader=new ZoomShader();
 		
 		this.balanceMotion=false;
 
@@ -109,7 +110,7 @@ class Lenia{
 		const img=new Image();
 		img.src=imageSrc;
 
-		this.size=Vec(width,height);
+		this.size=Vec(1,1);
 
 		this.dnaSelect = [0,0,0,0];
 		this.imageSource = {};
@@ -117,7 +118,7 @@ class Lenia{
 		this.settings = {}
 
 		img.onload=()=>{
-			// this.size=Vec(img.width,img.height).scl(imageScale).flr();
+			this.size=Vec(img.width,img.height).scl(imageScale).flr();
 			[
 				this.gradientTexPP,
 				this.motionTexPP,
@@ -136,6 +137,24 @@ class Lenia{
 		};
 		// console.log("dna",this.materials[0].read(4,gl.RGBA,gl.FLOAT,Float32Array));
 	}
+	resize(img)
+	{
+		this.size=Vec(img.width,img.height).flr();
+		[
+			this.gradientTexPP,
+			this.motionTexPP,
+			this.dnaTexPP,
+			this.imgTex,
+			this.imgGradientTex,
+			...this.materials.flatMap(x=>[...x])
+		].forEach(t=>t.resize(this.size.x,this.size.y));
+		this.materials.forEach((m,i,arr)=>{
+			this.noiseShader.run(m.leniaTexPP);
+		});
+
+		this.imageSource = twgl.createTexture(gl, { src: img });
+		this.dnaInitShader.run(this.dnaTexPP,this.imageSource,this.materials[0].geneMaxLength);
+	}
 	reset()
 	{
 		this.materials.forEach((m,i,arr)=>{
@@ -148,7 +167,9 @@ class Lenia{
 
 		if (update)
 		{
-			this.copyShader.run(imageTex,this.imgTex);
+			// this.copyShader.run(imageTex,this.imgTex);
+			const set = this.settings;
+			this.zoomShader.run(set.zoomScale, set.zoomAt, imageTex, this.imgTex);
 			// console.log("copyShader")
 			this.gradientShader.run(this.imgTex,this.imgGradientTex);
 

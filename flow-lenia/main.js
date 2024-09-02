@@ -36,8 +36,12 @@ display.view=new Cam(Vec(0,0),1.);
 let control=new Control();
 control.connect(canvasElm);
 
+const width = canvasElm.width;
+const height = canvasElm.height;
+
 let shaderManager=new ShaderManager();
-let lenia=new Lenia(canvasElm.width, canvasElm.height);
+let lenia=new Lenia();
+let leniaZoom=new Lenia();
 let canvasTex=new Texture({
 	src: canvasElm,
 	minMag: gl.NEAREST,
@@ -63,70 +67,81 @@ dom_label.textContent = "";
 // print label content
 control.callbacks['clic'] = () => { console.log(dom_label.textContent); }
 
+// settings
+settings.imageHD = () => {
+	settings.hd = !settings.hd;
+
+	const img = new Image();
+	img.src = "./img/prendre-vie"+(settings.hd?"":"-sd")+".png";
+	img.onload = () => {
+		imageTex = new Texture({ src: img });
+		lenia.resize(img);
+		leniaZoom.resize(img);
+	}
+
+};
+settings.reset = () => {
+	lenia.reset();
+	leniaZoom.reset();
+};
+lenia.settings = settings;
+leniaZoom.settings = settings;
+
 // gui
 var gui = new dat.GUI();
-// gui.useLocalStorage = true;
 // var folder1 = gui.addFolder('Flow Field');
-lenia.settings = {
-	velocitySpeed: 1,
-	gradientSpeed: 0.25,
-	colorDNA: 0.,
-	spawnEdge: true,
-	blendImageInGradient: false,
-	blendImageInLenia: false,
-	reset: () => { lenia.reset() },
-}
-gui.add(lenia.settings, 'velocitySpeed', 0, 1, 0.01);
-gui.add(lenia.settings, 'gradientSpeed', 0, 1, 0.01);
-gui.add(lenia.settings, 'colorDNA', 0, 1, 0.01);
-gui.add(lenia.settings, 'spawnEdge');
-gui.add(lenia.settings, 'blendImageInGradient');
-gui.add(lenia.settings, 'blendImageInLenia');
-gui.add(lenia.settings, 'reset');
-gui.remember(lenia.settings);
+gui.add(settings, 'velocitySpeed', 0, 1, 0.01);
+gui.add(settings, 'gradientSpeed', 0, 1, 0.01);
+gui.add(settings, 'colorDNA', 0, 1, 0.01);
+gui.add(settings, 'colorVariation', 0, 1, 0.01);
+gui.add(settings, 'spawnEdge');
+gui.add(settings, 'blendImageInGradient');
+gui.add(settings, 'blendImageInLenia');
+gui.add(settings, 'imageHD');
+gui.add(settings, 'zoom');
+gui.add(settings, 'reset'); 
+gui.remember(settings);
 
 let zoomBase=1.;
 let zoomExp=0;
 let frameAnim=animate(()=>{
 	time++;
-
-	let ratio=display.size.cln().div(lenia.size);
-	let scale=Vec(
-		min(ratio.x/ratio.y,1.),
-		min(ratio.y/ratio.x,1.)
-	);
-	let pre=display.view.transformInv(control.mousePos()).div(display.size);
-	zoomExp-=sign(control.mouseWheelDelta());
-	display.view.zoom=pow(zoomBase,zoomExp);
-	let post=display.view.transformInv(control.mousePos()).div(display.size);
-	display.view.pos.add(post.cln().sub(pre).scl(scale));
 	
 	control.resetDelta();
 
-	// if (update)
+	display.clear();
+	canvasTex.update(canvasElm);
+
+	if (lenia.settings.zoom)
 	{
-		display.clear();
-		canvasTex.update(canvasElm);
+		leniaZoom.settings.zoomScale = 2.;
+		leniaZoom.run(update,display,canvasTex,imageTex);
+	}
+	else
+	{
+		lenia.settings.zoomScale = 1.;
 		lenia.run(update,display,canvasTex,imageTex);
 	}
 
+	// pick a specie
 	if (control.mLDown)
 	{
+		const l = lenia.settings.zoom ? leniaZoom : lenia;
+
 		// label position
 		const mouse = control.mousePos();
-		// dom_label.style.left = (10+mouse[0]) + "px";
-		// dom_label.style.top = (10+mouse[1]) + "px";
 		
 		// read back pixel dna
 		const read = new Float32Array(4);
-		const x = mouse[0];
-		const y = mouse[1];
-		lenia.dnaTexPP.readAt(x,y,gl.RGBA, gl.FLOAT,read);
+		const x = mouse[0]*l.size[0]/canvasElm.width;
+		const y = mouse[1]*l.size[1]/canvasElm.height;
+
+		l.dnaTexPP.readAt(x,y,gl.RGBA, gl.FLOAT,read);
 
 		// update label
 		dom_label.textContent = read[0] + ',' + read[1] + ',' + read[2] + ',' + read[3];
 
-		lenia.dnaSelect = read;
+		l.dnaSelect = read;
 
 	}
 
