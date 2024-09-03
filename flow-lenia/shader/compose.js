@@ -9,6 +9,7 @@ class ComposeShader extends FragShader{
 				uniform sampler2D leniaTex2;
                 uniform float time;
                 uniform float zoom;
+                uniform float secondLayer;
                 uniform vec2 offset;
 
 				in vec2 pos;
@@ -24,13 +25,13 @@ class ComposeShader extends FragShader{
                     outColor = mix(
                         texture(leniaTex1, pos2),
                         texture(leniaTex2, pos2),
-                        0.5);
+                        0.5*(1.-secondLayer));
                     // outColor = texture(leniaTex1, pos2);
 				}
 			`,
 		);
 	}
-	run(cam,imgSize,canvasSize,zoom,offset,leniaTex1,leniaTex2){
+	run(cam,imgSize,canvasSize,zoom,offset,leniaTex1,leniaTex2,settings){
 		this.uniforms={
 			camZoom:cam.zoom,
 			camPos:cam.pos,
@@ -41,6 +42,7 @@ class ComposeShader extends FragShader{
 			time:time/60.,
 			leniaTex1:leniaTex1.tex,
 			leniaTex2:leniaTex2.tex,
+			secondLayer:settings.secondLayer?0:1,
 		};
 		super.run();
 	}

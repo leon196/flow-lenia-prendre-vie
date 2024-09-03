@@ -20,6 +20,7 @@ const settings = {
 	colorDNA: 0.,
 	colorVariation: 0.,
 	hd: false,
+	secondLayer: true,
 	spawnEdge: true,
 	blendImageInGradient: true,
 	blendImageInLenia: false,

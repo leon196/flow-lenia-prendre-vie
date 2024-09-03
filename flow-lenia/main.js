@@ -109,16 +109,24 @@ leniaLayer2.settings = settings;
 
 // gui
 var gui = new dat.GUI();
-// var folder1 = gui.addFolder('Flow Field');
-gui.add(settings, 'velocitySpeed', 0, 1, 0.01);
-gui.add(settings, 'gradientSpeed', 0, 1, 0.01);
-gui.add(settings, 'colorDNA', 0, 1, 0.01);
-gui.add(settings, 'colorVariation', 0, 1, 0.01);
-gui.add(settings, 'spawnEdge');
-gui.add(settings, 'blendImageInGradient');
-gui.add(settings, 'blendImageInLenia');
-gui.add(settings, 'imageHD');
-gui.add(settings, 'zoom'); 
+var folderSpeed = gui.addFolder('Speed');
+folderSpeed.add(settings, 'velocitySpeed', 0, 1, 0.01);
+folderSpeed.add(settings, 'gradientSpeed', 0, 1, 0.01);
+folderSpeed.open();
+var folderColor = gui.addFolder('Color');
+folderColor.add(settings, 'colorDNA', 0, 1, 0.01);
+folderColor.add(settings, 'colorVariation', 0, 1, 0.01);
+folderColor.open();
+var folderSpawn = gui.addFolder('Spawn');
+folderSpawn.add(settings, 'spawnEdge');
+folderSpawn.open();
+var folderImage = gui.addFolder('Image');
+folderImage.add(settings, 'blendImageInGradient');
+folderImage.add(settings, 'blendImageInLenia');
+folderImage.add(settings, 'secondLayer');
+folderImage.add(settings, 'imageHD');
+folderImage.add(settings, 'zoom'); 
+folderImage.open();
 gui.add(settings, 'reset'); 
 gui.remember(settings);
 
@@ -130,10 +138,13 @@ let frameAnim=animate(()=>{
 	display.clear();
 	canvasTex.update(canvasElm);
 
-	leniaLayer2.run(update,display,canvasTex,imageTex);
 	lenia.run(update,display,canvasTex,imageTex);
+	if (settings.secondLayer)
+	{
+		leniaLayer2.run(update,display,canvasTex,imageTex);
+	}
 
-	composeShader.run(display.view,lenia.size,display.size,zoom,offset,lenia.renderTex,leniaLayer2.renderTex);
+	composeShader.run(display.view, lenia.size, display.size, zoom, offset, lenia.renderTex, leniaLayer2.renderTex, settings);
 
 	// pick a specie
 	if (control.mLDown)
