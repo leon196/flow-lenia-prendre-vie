@@ -70,10 +70,11 @@ control.callbacks['clic'] = () => { console.log(dom_label.textContent); }
 
 settings.updateMultiLayers = () => {
 	if (settings.multiLayers) {
-		leniaLayers = [lenia, leniaLayer2, leniaLayer3];
+		leniaLayers = [lenia, leniaLayer2];
 	} else {
 		leniaLayers = [lenia];
 	}
+	console.log(leniaLayers)
 }
 
 // settings

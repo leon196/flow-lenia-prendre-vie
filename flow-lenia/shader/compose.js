@@ -24,15 +24,18 @@ class ComposeShader extends FragShader{
                     p = (p)/zoom-offset;
 					vec2 uv=(p+1.)*.5;
 					if (multiLayers) {
-						outColor = vec4(
-							texture(leniaTex1, uv).r,
-							texture(leniaTex2, uv).g,
-							texture(leniaTex3, uv).b,
-							1
-						);
+						// outColor = vec4(
+						// 	texture(leniaTex1, uv).r,
+						// 	texture(leniaTex2, uv).g,
+						// 	texture(leniaTex3, uv).b,
+						// 	1
+						// );
+						outColor = (texture(leniaTex1, uv)+texture(leniaTex2, uv))/2.;
 					} else {
 						outColor = texture(leniaTex1, uv);
 					}
+					// outColor.rgb -= vec3(hash12(gl_FragCoord.xy))*.2;
+					// outColor = texture(leniaTex2, uv);
                     // outColor = mix(
                     //     texture(leniaTex1, uv),
                     //     texture(leniaTex2, uv),
