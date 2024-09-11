@@ -74,7 +74,6 @@ settings.updateMultiLayers = () => {
 	} else {
 		leniaLayers = [lenia];
 	}
-	console.log(leniaLayers)
 }
 
 // settings
@@ -130,6 +129,7 @@ folderImage.add(settings, 'zoom').onChange(settings.onZoom);
 folderImage.open();
 gui.add(settings, 'reset'); 
 gui.remember(settings);
+gui.close();
 
 let elapsed = 0;
 
