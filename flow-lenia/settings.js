@@ -2,7 +2,7 @@
 // MODIFY THESE VARIABLES AS NEEDED
 //----------------------------------
 
-let imageSrc="./img/prendre-vie-sd.png";
+let imageSrc="./img/prendre-vie.png";
 let imageScale=1.;
 
 //creates a border on the image of random mutations, set to 0 to turn off
@@ -19,10 +19,10 @@ const settings = {
 	gradientSpeed: 0.25,
 	colorDNA: 0.,
 	colorVariation: 0.,
-	hd: false,
-	secondLayer: true,
+	image4K: true,
+	multiLayers: false,
 	spawnEdge: true,
 	blendImageInGradient: true,
-	blendImageInLenia: false,
-	zooming: false,
+	blendImageInLenia: true,
+	zoom: true,
 }

@@ -1,0 +1,18 @@
+
+TODO:
+
+ 
+Export d’un exe web: en cours, devrait être possible
+Gestion du temps long : ne pas oublier
+Peut-être avec la time line
+Contrôle du type d’espèces dans le temps
+Peut-être avoir une petite interface pour gérer la sélection des espèces
+Avec attribution d’un calque et aussi le rapport à la time line
+
+DONE:
+HD : bien avoir deux états : fullHD et 4K
+Calques : mis en place. Pour le moment on peut rester sur 2 car déjà très gourmand, surtout en HD
+On pourra tester avec 3 sur le gros PC, mais a priori pas au-delà 
+Faire plutôt une sélection : Layer 1, 2 et 3
+Zoom : dans l’image, c’est-à-dire comme un microscope, et donc pas dans la matrice en grossissant les pixels.
+On doit conserver la bonne résolution en entrant dans le détail de la vie

@@ -10,7 +10,6 @@ createStyles(scss`&{
 	.gl{
 		pointer-events:none;
 		opacity:1;
-		image-rendering: pixelated;
 	}
 }`());
 
@@ -39,6 +38,9 @@ control.connect(canvasElm);
 let shaderManager=new ShaderManager();
 let lenia=new Lenia();
 let leniaLayer2=new Lenia();
+let leniaLayer3=new Lenia();
+let leniaLayers = [lenia];
+
 let canvasTex=new Texture({
 	src: canvasElm,
 	minMag: gl.NEAREST,
@@ -66,46 +68,44 @@ dom_label.textContent = "";
 // print label content
 control.callbacks['clic'] = () => { console.log(dom_label.textContent); }
 
+settings.updateMultiLayers = () => {
+	if (settings.multiLayers) {
+		leniaLayers = [lenia, leniaLayer2, leniaLayer3];
+	} else {
+		leniaLayers = [lenia];
+	}
+}
+
 // settings
 settings.imageHD = () => {
-	settings.hd = !settings.hd;
-
 	const img = new Image();
-	img.src = "./img/prendre-vie"+(settings.hd?"":"-sd")+".png";
+	img.src = "./img/prendre-vie"+(settings.image4K?"":"-sd")+".png";
 	img.onload = () => {
 		imageTex = new Texture({ src: img });
-		lenia.resize(img);
-		leniaLayer2.resize(img);
+		leniaLayers.forEach(layer => layer.resize(img));
 	}
-
 };
 
 // reset
 settings.reset = () => {
-	lenia.reset();
-	leniaLayer2.reset();
+	leniaLayers.forEach(layer => layer.reset());
 };
 
 // zoom
 let zoom = 1.;
 let offset = [0,0];
+// let zoom2 = 1.;
+// let offset2 = [0,0];
 
-settings.zoom = () => {
-	settings.zooming = !settings.zooming;
-	if (settings.zooming)
-	{
-		zoom = 2.;
-		offset = [0.5,0.5];
-	}
-	else
-	{
-		zoom = 1.;
-		offset = [0,0];
+settings.onZoom = () => {
+	if (anim.current == undefined) {
+		anim.start();
 	}
 };
 
-lenia.settings = settings;
-leniaLayer2.settings = settings;
+leniaLayers.forEach(layer => layer.settings = settings);
+
+if (settings.zoom) anim.start();
 
 // gui
 var gui = new dat.GUI();
@@ -123,33 +123,38 @@ folderSpawn.open();
 var folderImage = gui.addFolder('Image');
 folderImage.add(settings, 'blendImageInGradient');
 folderImage.add(settings, 'blendImageInLenia');
-folderImage.add(settings, 'secondLayer');
-folderImage.add(settings, 'imageHD');
-folderImage.add(settings, 'zoom'); 
+folderImage.add(settings, 'multiLayers').onChange(settings.updateMultiLayers);
+folderImage.add(settings, 'image4K').onChange(settings.imageHD);
+folderImage.add(settings, 'zoom').onChange(settings.onZoom); 
 folderImage.open();
 gui.add(settings, 'reset'); 
 gui.remember(settings);
 
-let frameAnim=animate(()=>{
+let elapsed = 0;
+
+let frameAnim=animate((timeElapsed)=>{
 	time++;
+
+	const dt = timeElapsed - elapsed;
+	elapsed = timeElapsed;
+
+	if (anim.current != undefined && settings.zoom) {
+		anim.current(dt);
+	}
 	
 	control.resetDelta();
 
 	display.clear();
 	canvasTex.update(canvasElm);
 
-	lenia.run(update,display,canvasTex,imageTex);
-	if (settings.secondLayer)
-	{
-		leniaLayer2.run(update,display,canvasTex,imageTex);
-	}
+	leniaLayers.forEach(layer => layer.run(update,display,canvasTex,imageTex));
 
-	composeShader.run(display.view, lenia.size, display.size, zoom, offset, lenia.renderTex, leniaLayer2.renderTex, settings);
+	composeShader.run(display.view, lenia.size, display.size, zoom, offset, leniaLayers, settings);
 
 	// pick a specie
 	if (control.mLDown)
 	{
-		const l = lenia.settings.zoom ? leniaLayer2 : lenia;
+		const l = lenia;
 
 		// label position
 		const mouse = control.mousePos();
