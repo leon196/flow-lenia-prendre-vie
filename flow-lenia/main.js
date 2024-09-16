@@ -153,25 +153,25 @@ let frameAnim=animate((timeElapsed)=>{
 	composeShader.run(display.view, lenia.size, display.size, zoom, offset, leniaLayers, settings);
 
 	// pick a specie
-	if (control.mLDown)
-	{
-		const l = lenia;
+	// if (control.mLDown)
+	// {
+	// 	const l = lenia;
 
-		// label position
-		const mouse = control.mousePos();
+	// 	// label position
+	// 	const mouse = control.mousePos();
 		
-		// read back pixel dna
-		const read = new Float32Array(4);
-		const x = mouse[0]*l.size[0]/canvasElm.width;
-		const y = mouse[1]*l.size[1]/canvasElm.height;
+	// 	// read back pixel dna
+	// 	const read = new Float32Array(4);
+	// 	const x = mouse[0]*l.size[0]/canvasElm.width;
+	// 	const y = mouse[1]*l.size[1]/canvasElm.height;
 
-		l.dnaTexPP.readAt(x,y,gl.RGBA, gl.FLOAT,read);
+	// 	l.dnaTexPP.readAt(x,y,gl.RGBA, gl.FLOAT,read);
 
-		// update label
-		dom_label.textContent = read[0] + ',' + read[1] + ',' + read[2] + ',' + read[3];
+	// 	// update label
+	// 	dom_label.textContent = read[0] + ',' + read[1] + ',' + read[2] + ',' + read[3];
 
-		l.dnaSelect = read;
+	// 	l.dnaSelect = read;
 
-	}
+	// }
 
 },1,true).start();
