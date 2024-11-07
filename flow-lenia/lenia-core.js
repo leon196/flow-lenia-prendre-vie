@@ -205,7 +205,7 @@ class Lenia{
 					this.motionShader.run(this.gradientTexPP,this.motionTexPP);
 				}
 				this.viscosityShader.run(m.leniaTexPP,m.veloTexPP);
-				this.veloShader.run(this.gradientTexPP,m.veloTexPP,this.settings);
+				this.veloShader.run(this.gradientTexPP,m.veloTexPP,imageTex,this.settings);
 
 				if (this.settings.blendImageInLenia)
 				{
