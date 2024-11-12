@@ -123,17 +123,21 @@ class FlowShader extends FragShader{
 						{
 							//mutate
 							int initBlockSize=50;
-							outColor2=floor(hash42(vec2(coord2/initBlockSize)+rand)*maxLength);
+							outColor2=floor(hash42(vec2(coord2/initBlockSize)+rand)*3.);
 							// outColor2=floor(hash42(vec2(coord2)+rand)*maxLength);
 							outColor0.x+=mutationBorderStrength;
 						}
 						else
 						{
 							outColor2=texelFetch(dnaTex,bestCoord,0);//texelFetch(veloTex,coord2,0);
+							// outColor2+= 1.0;
 						}
 					}else{
 						outColor2=texelFetch(dnaTex,coord2,0);//texelFetch(veloTex,coord2,0);
+						// outColor2+= 10.0;
 					}
+					// outColor2 = fract(outColor2+0.01);
+					// outColor2 = mod(outColor2 + 10., 1000.);
 					// outColor=vec4(total+drawn,val.y,val.z,val.w);
 				}
 			`,

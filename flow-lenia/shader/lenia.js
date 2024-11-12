@@ -15,6 +15,7 @@ class LeniaShader extends FragShader{
 				uniform vec2 dnaSize;
 				uniform int geneGroupLength;
 				uniform float rand;
+				uniform float tick;
 				in vec2 pos;
 
 				layout(location = 0) out vec4 outColor0;
@@ -205,6 +206,7 @@ class LeniaShader extends FragShader{
 					ivec2 coord2=ivec2(pos2*size);
 
 					ivec4 dna=ivec4(texelFetch(dnaTex,coord2,0));
+					// dna = (dna+ivec4(tick*100.)) % ivec4(1000);
 					if(dna==ivec4(-1)){
 						outColor0=vec4(0.,0.,0.,0.);
 						return;
@@ -237,6 +239,7 @@ class LeniaShader extends FragShader{
 			geneSize:geneTex.size,
 			dnaTex:dnaTex.tex,
 			dnaSize:dnaTex.size,
+			tick: Math.floor(time),
 			rand: rand(),
 		};
 		this.attachments=[

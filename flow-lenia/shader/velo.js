@@ -22,7 +22,7 @@ class VeloShader extends FragShader{
 					float gSpeed = gradientSpeed;
 					float gray = texture(imageTex, pos2).r;
 					float tt = t/60./3.;
-					gSpeed = mix(-.5,.5,sin(gray*3.-tt)*.5+.5)*1.;
+					// gSpeed = mix(-.5,.5,sin(gray*3.-tt)*.5+.5)*1.;
 					// vSpeed = mix(0., 1., fract(gray*2.+tt));
 					// vSpeed = mix(0., 1., fract(gray*2.+tt));
 					// vSpeed = mix(0.0, 2., fract(pow(texture(imageTex, pos2).r, .4)*1.+t/60./10.));

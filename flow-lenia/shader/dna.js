@@ -21,14 +21,17 @@ class GeneInitShader extends FragShader{
 					vec2 pos2=(pos+1.)*.5;
 					ivec2 coord2=ivec2(pos2*size);
 
-					float idx=float(coord2.x)+float(coord2.y)*size.x;
-					if(mod(idx,groupLength)!=0.){
-						outColor=hash42(vec2(coord2)+rand);
-						// outColor=hash42(vec2(coord2));
-						// outColor = hash42(vec2(floor(texture(image, pos2).r*100.),0.));
-					}else{
-						outColor=vec4(0.);
-					}
+					// float idx=float(coord2.x)+float(coord2.y)*size.x;
+					// if(mod(idx,groupLength)!=0.){
+					// 	outColor=hash42(vec2(coord2)+rand);
+					// 	// outColor=hash42(vec2(coord2));
+					// 	// outColor = hash42(vec2(floor(texture(image, pos2).r*100.),0.));
+					// }else{
+					// 	outColor=vec4(0.);
+					// }
+					outColor = hash42(vec2(floor(texture(image, pos2).r*256.),rand));
+
+					// outColor = 
 				}
 			`,
 		);
