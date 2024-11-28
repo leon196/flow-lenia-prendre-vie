@@ -8,7 +8,6 @@ createStyles(scss`&{
 		height:100vh;
 	}
 	.gl{
-		pointer-events:none;
 		opacity:1;
 	}
 }`());
@@ -16,7 +15,8 @@ createStyles(scss`&{
 let canvasElm=newElm("canvas");
 let glCanvasElm=newElm("canvas");
 let gl=glCanvasElm.getContext("webgl2",{
-	premultipliedAlpha: true
+	premultipliedAlpha: true,
+	preserveDrawingBuffer: true,
 });
 
 gl.getExtension("EXT_color_buffer_float");
@@ -24,8 +24,8 @@ gl.getExtension("EXT_float_blend");
 
 // Populate page html
 let body=html`
-	${addClass("gl",glCanvasElm)}
 	${addClass("canvas",canvasElm)}
+	${addClass("gl",glCanvasElm)}
 `();
 addElm(body,document.body);
 body.disolve();
@@ -37,8 +37,8 @@ control.connect(canvasElm);
 
 let shaderManager=new ShaderManager();
 let lenia=new Lenia();
-let leniaLayer2=new Lenia();
-let leniaLayer3=new Lenia();
+// let leniaLayer2=new Lenia();
+// let leniaLayer3=new Lenia();
 let leniaLayers = [lenia];
 
 let canvasTex=new Texture({
@@ -126,10 +126,20 @@ folderImage.add(settings, 'blendImageInLenia');
 folderImage.add(settings, 'multiLayers').onChange(settings.updateMultiLayers);
 folderImage.add(settings, 'image4K').onChange(settings.imageHD);
 folderImage.add(settings, 'zoom').onChange(settings.onZoom); 
+folderImage.add(settings, 'geneUpdate').onChange(() => {
+	var seed = Math.floor(Math.random()*1000000);
+	lenia.geneUpdate(seed);
+	console.log("gene:"+seed)
+}); 
+folderImage.add(settings, 'dnaUpdate').onChange(() => {
+	var seed = Math.floor(Math.random()*1000000);
+	lenia.dnaUpdate(seed);
+	console.log("dna:"+seed)
+}); 
 folderImage.open();
 gui.add(settings, 'reset'); 
 gui.remember(settings);
-gui.close();
+// gui.close();
 
 let elapsed = 0;
 

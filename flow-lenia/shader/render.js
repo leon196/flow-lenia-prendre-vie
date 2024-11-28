@@ -10,6 +10,7 @@ class RenderShader extends FragShader{
 				uniform sampler2D dnaTex;
 				uniform sampler2D gradientTex;
 				uniform sampler2D imageTex;
+				uniform sampler2D imageMask;
 				uniform vec2 imgSize;
 				uniform vec2 canvasSize;
 				uniform vec2 camPos;
@@ -87,11 +88,13 @@ class RenderShader extends FragShader{
 					if(pos2.x<0.||pos2.x>1.||pos2.y<0.||pos2.y>1.){
 						outColor*=.25;
 					}
+
+					// outColor = vec4(vec3(texture(imageMask, pos2).a), 1);
 				}
 			`,
 		);
 	}
-	run(cam,imgSize,canvasSize,leniaMaterials,dnaTex,gradientTex,imageTex,dnaSelect,settings,renderTex){
+	run(cam,imgSize,canvasSize,leniaMaterials,dnaTex,gradientTex,imageTex,dnaSelect,settings,renderTex,imageMask){
 		this.uniforms={
 			camZoom:cam.zoom,
 			camPos:cam.pos,
@@ -106,6 +109,7 @@ class RenderShader extends FragShader{
 			dnaSelect:dnaSelect,
 			colorDNA:settings.colorDNA,
 			colorVariation:settings.colorVariation,
+			imageMask:imageMask,
 		};
 		this.attachments=[
 			{

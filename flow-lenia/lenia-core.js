@@ -94,9 +94,9 @@ class Lenia{
 		this.noiseShader=new NoiseShader();
 		this.leniaShader=new LeniaShader();
 		this.gradientShader=new GradientShader();
-		this.motionCapacityShader=new MotionCapacityShader(2);
-		this.motionShader=new MotionShader(2);
-		this.viscosityShader=new ViscosityShader(2);
+		this.motionCapacityShader=new MotionCapacityShader(3);
+		this.motionShader=new MotionShader(3);
+		this.viscosityShader=new ViscosityShader(3);
 		this.veloShader=new VeloShader();
 		this.flowShader=new FlowShader();
 		this.renderShader=new RenderShader();
@@ -108,9 +108,10 @@ class Lenia{
 		this.zoomShader=new ZoomShader();
 		
 		this.balanceMotion=false;
+		this.imageMask = twgl.createTexture(gl, { src: "./img/masks.png" });
 
 		this.materials.forEach((m,i,arr)=>{
-			this.geneInitShader.run(m.geneTexPP, m.imgTex, m.geneGroupLength);
+			this.geneInitShader.run(m.geneTexPP, m.imgTex, m.geneGroupLength,this.imageMask,19200);
 			// console.log("gene",m.geneTexPP.read(4,gl.RGBA,gl.FLOAT,Float32Array));
 		});
 
@@ -121,6 +122,7 @@ class Lenia{
 
 		this.dnaSelect = [0,0,0,0];
 		this.imageSource = {};
+		
 
 		this.settings = {}
 
@@ -140,10 +142,21 @@ class Lenia{
 			});
 
 			this.imageSource = twgl.createTexture(gl, { src: img });
-			this.dnaInitShader.run(this.dnaTexPP,this.imageSource,this.materials[0].geneMaxLength);
+			this.dnaInitShader.run(this.dnaTexPP,this.imageSource,this.materials[0].geneMaxLength,this.imageMask,123);
 			// console.log("img.onload")
 		};
 		// console.log("dna",this.materials[0].read(4,gl.RGBA,gl.FLOAT,Float32Array));
+	}
+	geneUpdate(seed)
+	{
+		this.materials.forEach((m,i,arr)=>{
+			this.geneInitShader.run(m.geneTexPP, m.imgTex, m.geneGroupLength,this.imageMask,seed);
+			// console.log("gene",m.geneTexPP.read(4,gl.RGBA,gl.FLOAT,Float32Array));
+		});
+	}
+	dnaUpdate(seed)
+	{
+		this.dnaInitShader.run(this.dnaTexPP,this.imageSource,this.materials[0].geneMaxLength,this.imageMask,seed);
 	}
 	resize(img)
 	{
@@ -162,14 +175,14 @@ class Lenia{
 		});
 
 		this.imageSource = twgl.createTexture(gl, { src: img });
-		this.dnaInitShader.run(this.dnaTexPP,this.imageSource,this.materials[0].geneMaxLength);
+		this.dnaInitShader.run(this.dnaTexPP,this.imageSource,this.materials[0].geneMaxLength,this.imageMask,123);
 	}
 	reset()
 	{
 		this.materials.forEach((m,i,arr)=>{
 			this.noiseShader.run(m.leniaTexPP);
 		});
-		this.dnaInitShader.run(this.dnaTexPP,this.imageSource,this.materials[0].geneMaxLength);
+		this.dnaInitShader.run(this.dnaTexPP,this.imageSource,this.materials[0].geneMaxLength,this.imageMask,123);
 	}
 	run(update,display,drawTex,imageTex){
 		shaderManager.resizeToDisplay();
@@ -197,6 +210,7 @@ class Lenia{
 				{
 					this.subShader.run(this.imgGradientTex,this.gradientTexPP);
 				}
+
 				// this.mixShader.run(.9,this.imgGradientTex,this.gradientTexPP);
 				
 				//These lines make it so that for every action there must be an equal and opposite reaction
@@ -205,7 +219,7 @@ class Lenia{
 					this.motionShader.run(this.gradientTexPP,this.motionTexPP);
 				}
 				this.viscosityShader.run(m.leniaTexPP,m.veloTexPP);
-				this.veloShader.run(this.gradientTexPP,m.veloTexPP,imageTex,this.settings);
+				this.veloShader.run(this.gradientTexPP,m.veloTexPP,imageTex,this.settings,this.imageMask);
 
 				if (this.settings.blendImageInLenia)
 				{
@@ -219,7 +233,7 @@ class Lenia{
 		}
 		
 		if(this.size.x>1.||this.size.y>1.){
-			this.renderShader.run(display.view,this.size,display.size,this.materials,this.dnaTexPP,this.gradientTexPP,imageTex,this.dnaSelect,this.settings,this.renderTex);
+			this.renderShader.run(display.view,this.size,display.size,this.materials,this.dnaTexPP,this.gradientTexPP,imageTex,this.dnaSelect,this.settings,this.renderTex,this.imageMask);
 		}
 	}
 }

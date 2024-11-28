@@ -9,6 +9,7 @@ class ViscosityShader extends FragShader{
 				uniform sampler2D leniaTex;
 				uniform sampler2D veloTex;
 				uniform vec2 size;
+				uniform float time;
 				in vec2 pos;
 				out vec4 outColor;
 
@@ -41,6 +42,8 @@ class ViscosityShader extends FragShader{
 					// weightTotal*=0.;
 					// veloTotal*=0.;
 					weightTotal+=weight;
+					float t = time/10.;
+					// velo += vec2(cos(t),sin(t)) * .1;
 					veloTotal+=velo;
 					if(weightTotal>0.){
 						veloTotal/=weightTotal;
@@ -50,13 +53,16 @@ class ViscosityShader extends FragShader{
 				}
 			`,
 		);
+		this.time = 0.;
 	}
 	run(leniaTex,veloTexPP){
 		this.uniforms={
 			leniaTex:leniaTex.tex,
 			veloTex:veloTexPP.tex,
 			size:leniaTex.size,
+			time:this.time,
 		};
+		this.time += 1./60.;
 		this.attachments=[
 			{
 				attachment:veloTexPP.flip().tex,

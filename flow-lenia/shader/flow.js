@@ -23,6 +23,7 @@ class FlowShader extends FragShader{
 				uniform vec2 canvasSize;
 				uniform vec2 camPos;
 				uniform float camZoom;
+				uniform float time;
 				uniform bool spawnEdge;
 
 				in vec2 pos;
@@ -32,6 +33,22 @@ class FlowShader extends FragShader{
 				layout(location = 2) out vec4 outColor2;
 				
 				${SHADER_FUNCS.HASH}
+
+				float gyroid(vec3 p)
+				{
+					return dot(sin(p),cos(p.yzx));
+				}
+
+				float fbm(vec3 p)
+				{
+					float r = 0.;
+					float a = 1.;
+					for (float i = 0.; i < 3.; ++i) {
+						r += gyroid(p/a)*a;
+						a /= 1.8;
+					}
+					return r;
+				}
 
 				ivec2 loopCoord(ivec2 coord){
 					return ivec2(mod(vec2(coord),size));
@@ -96,6 +113,17 @@ class FlowShader extends FragShader{
 					if(total>0.){
 						totalVelo/=total;
 					}
+					float t = time/1000.;
+
+					// curl
+					// vec2 e = vec2(.01,0);
+					// vec3 p = vec3(pos, length(pos)*.5) * 2.;
+					// float x = (fbm(p+e.yxy)-fbm(p-e.yxy))/(2.*e.x);
+					// float y = (fbm(p+e.xyy)-fbm(p-e.xyy))/(2.*e.x);
+					// vec2 curl = vec2(x,-y);
+
+					// totalVelo += vec2(cos(t),sin(t)) * .01;
+					// totalVelo += curl * .01;
 					// vec4 drawData=texture(canvas,pos2);//TODO
 					// float drawn=max((drawData.r*2.-1.)*drawData.w,-total);
 
@@ -157,6 +185,7 @@ class FlowShader extends FragShader{
 			size:leniaTexPP.size,
 			updateDna,
 			rand:rand(),
+			time: time,
 			tick: Math.floor(time*60),
 			maxLength:maxDnaLength,
 			mutationBorderWidth:(time%mutationBorderDelay==0)?mutationBorderWidth:0,

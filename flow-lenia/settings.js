@@ -2,7 +2,7 @@
 // MODIFY THESE VARIABLES AS NEEDED
 //----------------------------------
 
-let imageSrc="./img/blur-z1.png";
+let imageSrc="./img/prendre-vie.png";
 let imageScale=1.;
 
 //creates a border on the image of random mutations, set to 0 to turn off
@@ -22,7 +22,9 @@ const settings = {
 	image4K: true,
 	multiLayers: false,
 	spawnEdge: true,
-	blendImageInGradient: true,
-	blendImageInLenia: true,
+	blendImageInGradient: false,
+	blendImageInLenia: false,
 	zoom: false,
+	geneUpdate: false,
+	dnaUpdate: false,
 }
