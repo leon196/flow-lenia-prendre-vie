@@ -126,11 +126,11 @@ folderImage.add(settings, 'blendImageInLenia');
 folderImage.add(settings, 'multiLayers').onChange(settings.updateMultiLayers);
 folderImage.add(settings, 'image4K').onChange(settings.imageHD);
 folderImage.add(settings, 'zoom').onChange(settings.onZoom); 
-folderImage.add(settings, 'geneUpdate').onChange(() => {
-	var seed = Math.floor(Math.random()*1000000);
-	lenia.geneUpdate(seed);
-	console.log("gene:"+seed)
-}); 
+// folderImage.add(settings, 'geneUpdate').onChange(() => {
+// 	var seed = Math.floor(Math.random()*1000000);
+// 	lenia.geneUpdate(seed);
+// 	console.log("gene:"+seed)
+// }); 
 folderImage.add(settings, 'dnaUpdate').onChange(() => {
 	var seed = Math.floor(Math.random()*1000000);
 	lenia.dnaUpdate(seed);
@@ -139,13 +139,15 @@ folderImage.add(settings, 'dnaUpdate').onChange(() => {
 folderImage.open();
 gui.add(settings, 'reset'); 
 gui.remember(settings);
-// gui.close();
+gui.close();
 
-setInterval(()=>{
-	var seed = Math.floor(Math.random()*1000000);
-	lenia.geneUpdate(seed);
-	console.log("gene:"+seed)
-}, 15 * 1000)
+lenia.geneUpdate(315969);
+
+// setInterval(()=>{
+// 	var seed = Math.floor(Math.random()*1000000);
+// 	lenia.geneUpdate(seed);
+// 	console.log("gene:"+seed)
+// }, 15 * 1000)
 
 let elapsed = 0;
 

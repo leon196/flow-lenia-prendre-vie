@@ -121,6 +121,7 @@ class AddShader extends FragShader{
 	}
 }
 class SubShader extends FragShader{
+
 	constructor(){
 		super(
 			glsl`#version 300 es
@@ -130,25 +131,33 @@ class SubShader extends FragShader{
 				
 				uniform sampler2D aTex;
 				uniform sampler2D bTex;
+				uniform sampler2D imageTex;
 				uniform vec2 aSize;
 				uniform vec2 bSize;
+				uniform float tick;
 				
 				in vec2 pos;
 				out vec4 outColor;
 
 				void main(){
 					vec2 pos2=(pos+1.)*.5;
-					outColor=texture(bTex,pos2)-texture(aTex,pos2);
+					float time = tick/60.;
+					float image = texture(imageTex, pos2).r;
+					float cycle = sin(time/4.);//*.5+.5;
+					outColor=texture(bTex,pos2)-texture(aTex,pos2)*cycle;
 				}
 			`,
 		);
+		this.tick = 0;
 	}
-	run(aTex,bTexPP){
+	run(aTex,bTexPP,image){
 		this.uniforms={
 			bTex:bTexPP.tex,
 			aTex:aTex.tex,
 			bSize:bTexPP.size,
-			aSize:aTex.size
+			aSize:aTex.size,
+			imageTex:image,
+			tick:this.tick,
 		};
 		this.attachments=[
 			{
@@ -156,6 +165,7 @@ class SubShader extends FragShader{
 				...sizeObj(bTexPP.size)
 			}
 		];
+		this.tick++;
 		super.run();
 	}
 }

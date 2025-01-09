@@ -37,7 +37,9 @@ class GeneInitShader extends FragShader{
 					// outColor = hash42(vec2(123,seed));
 					// outColor = hash42(vec2(floor(mask*3.)*1234.,seed));
 					// outColor = hash42(vec2(floor(texture(imageMask, pos2).r*256.),rand+192.));
-					outColor = hash42(vec2(floor(texture(image, pos2).r*256.),seed));
+					// float layer = floor(mask*2.);
+					outColor = hash42(vec2(0.,seed));
+					// outColor = hash42(vec2(7.,seed));
 					// outColor = hash42(vec2(floor(pos2.x*256.),rand));
 
 					// outColor = 
@@ -91,10 +93,13 @@ class DnaInitShader extends FragShader{
 
 					int initBlockSize=100;
 					outColor = floor(hash42(vec2(123,321))*maxLength);
-					// outColor = floor(hash42(vec2(seed))*maxLength);
+					// outColor = floor(hash42(floor(pos/10.))*maxLength);
 					// outColor = vec4(1);
 					// outColor = floor(hash42(vec2(floor(texture(imageMask, pos2).r*256.),rand))*maxLength);
 					// outColor = floor(hash42(vec2(floor(texture(imageMask, pos2).r*256.),seed))*maxLength);
+					float mask = texture(imageMask, pos2).r;
+					mask = floor(mask*100.);
+					outColor = hash42(vec2(mask));
 					// outColor = floor(hash42(vec2(floor(pos2.x*256.),rand))*maxLength);
 					// outColor=vec4(4394, 47021.*sign(pos.x), 45166, 66015);
 					// outColor=vec4(5053,292,34399,18627);

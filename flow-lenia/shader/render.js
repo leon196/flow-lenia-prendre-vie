@@ -8,6 +8,7 @@ class RenderShader extends FragShader{
 				uniform sampler2D leniaTex1;
 				uniform sampler2D leniaTex2;
 				uniform sampler2D dnaTex;
+				uniform sampler2D geneTex;
 				uniform sampler2D gradientTex;
 				uniform sampler2D imageTex;
 				uniform sampler2D imageMask;
@@ -52,12 +53,13 @@ class RenderShader extends FragShader{
 					vec4 lenia1 = texture(leniaTex1,pos2);
 					vec4 lenia2 = texture(leniaTex2,pos2);
 					vec4 dna = texture(dnaTex,pos2);
+					vec4 gene = texture(geneTex,pos2);
 					vec4 gradient = texture(gradientTex,pos2);
 					vec4 image = texture(imageTex,vec2(pos2.x,1.-pos2.y));
 					// outColor=vec4(lenia.x,image.x,0.,1.);
 					
-					float x = dna.x/1000.;
-					x = abs(fract(x)-.5)*2.;
+					float x = dna.x;///1000.;
+					// x = abs(fract(x)-.5)*2.;
 
 					// outColor=vec4(
 					// 	gammaCorrect(vec3(lenia.x)),
@@ -68,11 +70,12 @@ class RenderShader extends FragShader{
 					// float g = smoothstep(.0,.5,lenia.x);
 					// outColor = vec4(vec3(lenia.x),1);
 					vec3 palette = hash44(dna).rgb;
-					vec3 tint = all(equal(dna, dnaSelect)) ? palette : vec3(1);
-					tint = mix(tint, palette, colorDNA);
+					// vec3 tint = all(equal(dna, dnaSelect)) ? palette : vec3(1);
+					// tint = mix(tint, palette, colorDNA);
+					vec3 tint = vec3(1);
 
-					palette = 0.5 + 0.5 * cos(vec3(1,2,3)*5.+1.+hash44(dna).r);
-					tint = mix(tint, palette, colorVariation);
+					// palette = 0.5 + 0.5 * cos(vec3(1,2,3)*5.+1.+hash44(dna).r);
+					// tint = mix(tint, palette, colorVariation);
 					// vec3 shade = gammaCorrect(vec3(lenia1.x));
 					vec3 shade = vec3(atan(lenia1.x));
 					outColor = vec4(shade*tint,1.);
@@ -94,7 +97,7 @@ class RenderShader extends FragShader{
 			`,
 		);
 	}
-	run(cam,imgSize,canvasSize,leniaMaterials,dnaTex,gradientTex,imageTex,dnaSelect,settings,renderTex,imageMask){
+	run(cam,imgSize,canvasSize,leniaMaterials,dnaTex,geneTex,gradientTex,imageTex,dnaSelect,settings,renderTex,imageMask){
 		this.uniforms={
 			camZoom:cam.zoom,
 			camPos:cam.pos,
@@ -104,6 +107,7 @@ class RenderShader extends FragShader{
 			leniaTex1: leniaMaterials[0].leniaTexPP.tex,
 			// leniaTex2: leniaMaterials[1].leniaTexPP.tex,
 			dnaTex:dnaTex.tex,
+			geneTex:geneTex.tex,
 			gradientTex:gradientTex.tex,
 			imageTex:imageTex.tex,
 			dnaSelect:dnaSelect,

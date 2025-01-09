@@ -225,6 +225,8 @@ class LeniaShader extends FragShader{
 						min(mass/8.*0.1,1.)
 					);
 
+					// result *= .9;
+
 					outColor0=vec4(result,0.,0.,0.);
 				}
 			`,

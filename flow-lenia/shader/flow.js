@@ -168,6 +168,9 @@ class FlowShader extends FragShader{
 					// outColor2 = fract(outColor2+0.01);
 					// outColor2 = mod(outColor2 + 10., 1000.);
 					// outColor=vec4(total+drawn,val.y,val.z,val.w);
+					// float tt = texture(imageTex, pos2).r + time;
+					// float cycle = abs(fract(tt)-.5)*2.;
+					// outColor0.x *= .99+.01*step(cycle, .1);
 				}
 			`,
 		);

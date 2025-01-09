@@ -143,6 +143,7 @@ class Lenia{
 
 			this.imageSource = twgl.createTexture(gl, { src: img });
 			this.dnaInitShader.run(this.dnaTexPP,this.imageSource,this.materials[0].geneMaxLength,this.imageMask,123);
+			this.geneUpdate(315969);
 			// console.log("img.onload")
 		};
 		// console.log("dna",this.materials[0].read(4,gl.RGBA,gl.FLOAT,Float32Array));
@@ -150,7 +151,7 @@ class Lenia{
 	geneUpdate(seed)
 	{
 		this.materials.forEach((m,i,arr)=>{
-			this.geneInitShader.run(m.geneTexPP, m.imgTex, m.geneGroupLength,this.imageMask,seed);
+			this.geneInitShader.run(m.geneTexPP, this.imageSource, m.geneGroupLength,this.imageMask,seed);
 			// console.log("gene",m.geneTexPP.read(4,gl.RGBA,gl.FLOAT,Float32Array));
 		});
 	}
@@ -189,7 +190,8 @@ class Lenia{
 
 		if (update)
 		{
-			this.copyShader.run(imageTex,this.imgTex);
+			// this.copyShader.run(imageTex,this.imgTex);
+			this.copyShader.run({tex:this.imageMask},this.imgTex);
 			// const set = this.settings;
 			// this.zoomShader.run(set.zoomScale, set.zoomAt, imageTex, this.imgTex);
 			// console.log("copyShader")
@@ -206,9 +208,9 @@ class Lenia{
 				);
 				this.gradientShader.run(m.affinityTexPP,this.gradientTexPP);
 
-				if (this.settings.blendImageInGradient)
+				// if (this.settings.blendImageInGradient)
 				{
-					this.subShader.run(this.imgGradientTex,this.gradientTexPP);
+					this.subShader.run(this.imgGradientTex,this.gradientTexPP,this.imageMask);
 				}
 
 				// this.mixShader.run(.9,this.imgGradientTex,this.gradientTexPP);
@@ -233,7 +235,8 @@ class Lenia{
 		}
 		
 		if(this.size.x>1.||this.size.y>1.){
-			this.renderShader.run(display.view,this.size,display.size,this.materials,this.dnaTexPP,this.gradientTexPP,imageTex,this.dnaSelect,this.settings,this.renderTex,this.imageMask);
+			let gene = this.materials[0].geneTexPP;
+			this.renderShader.run(display.view,this.size,display.size,this.materials,this.dnaTexPP,gene,this.gradientTexPP,imageTex,this.dnaSelect,this.settings,this.renderTex,this.imageMask);
 		}
 	}
 }
