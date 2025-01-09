@@ -41,9 +41,9 @@ class VeloShader extends FragShader{
 					float tt = t/60./3.;
 					// gSpeed = mix(-.5,.5,sin(gray*3.-tt)*.5+.5)*1.;
 					float blend = texture(imageMask, pos2).r;
-					// blend = abs(fract(blend+tt/10.)-.5)*2.;
-					vSpeed = mix(vSpeed*.6, vSpeed, 1.-blend);
-					// gSpeed = mix(gSpeed*.1, gSpeed, 1.-blend);
+					float cycle = abs(fract(blend+tt/10.)-.5)*2.;
+					vSpeed = mix(vSpeed*.8, vSpeed, 1.-cycle);
+					// gSpeed = mix(gSpeed*.95, gSpeed, cycle);
 					// vSpeed = mix(0., 1., fract(gray*2.+tt));
 					// vSpeed = mix(0., 1., fract(gray*2.+tt));
 					// vSpeed = mix(0.0, 2., fract(pow(texture(imageTex, pos2).r, .4)*1.+t/60./10.));
@@ -55,11 +55,13 @@ class VeloShader extends FragShader{
 
 					// curl
 					vec2 e = vec2(.01,0);
-					vec3 p = vec3(pos * 4., blend + tt/10.);
+					vec3 p = vec3(pos * 4., tt/10.);
 					float x = (fbm(p+e.yxy)-fbm(p-e.yxy))/(2.*e.x);
 					float y = (fbm(p+e.xyy)-fbm(p-e.xyy))/(2.*e.x);
 					vec2 curl = vec2(x,-y);
-					// v += curl * .01;
+					// v += curl * .001 * (1.-cycle);
+					// v = mix(v,-v,step(0.5, cycle));
+					v += curl * .002 * mix(1.,-1.,step(0.5, cycle));
 
 					// v += vec2(cos(tt),sin(tt)) * .01;
 					v/=max(length(v),1.);

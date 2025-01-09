@@ -16,7 +16,7 @@ let mutationBorderDelay=100;
 
 const settings = {
 	velocitySpeed: 1,
-	gradientSpeed: 0.25,
+	gradientSpeed: 0.5,
 	colorDNA: 0.,
 	colorVariation: 0.,
 	image4K: true,

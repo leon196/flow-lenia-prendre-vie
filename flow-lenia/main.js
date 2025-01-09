@@ -141,6 +141,12 @@ gui.add(settings, 'reset');
 gui.remember(settings);
 // gui.close();
 
+setInterval(()=>{
+	var seed = Math.floor(Math.random()*1000000);
+	lenia.geneUpdate(seed);
+	console.log("gene:"+seed)
+}, 15 * 1000)
+
 let elapsed = 0;
 
 let frameAnim=animate((timeElapsed)=>{

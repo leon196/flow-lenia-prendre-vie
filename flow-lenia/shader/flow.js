@@ -151,9 +151,10 @@ class FlowShader extends FragShader{
 						{
 							//mutate
 							int initBlockSize=50;
-							outColor2=floor(hash42(vec2(coord2/initBlockSize)+rand)*3.);
+							// outColor2=floor(hash42(vec2(coord2/initBlockSize)+rand)*3.);
 							// outColor2=floor(hash42(vec2(coord2)+rand)*maxLength);
-							outColor0.x+=mutationBorderStrength;
+							outColor2=texelFetch(dnaTex,bestCoord,0);//texelFetch(veloTex,coord2,0);
+							// outColor0.x+=mutationBorderStrength;
 						}
 						else
 						{
