@@ -190,8 +190,8 @@ class Lenia{
 
 		if (update)
 		{
-			// this.copyShader.run(imageTex,this.imgTex);
-			this.copyShader.run({tex:this.imageMask},this.imgTex);
+			this.copyShader.run(imageTex,this.imgTex);
+			// this.copyShader.run({tex:this.imageMask},this.imgTex);
 			// const set = this.settings;
 			// this.zoomShader.run(set.zoomScale, set.zoomAt, imageTex, this.imgTex);
 			// console.log("copyShader")
@@ -201,6 +201,7 @@ class Lenia{
 				let nextM=this.materials[(i+1)%this.materials.length];
 				this.leniaShader.run(
 					m.geneGroupLength,
+					this.imgTex,
 					m.geneTexPP,
 					this.dnaTexPP,
 					m.leniaTexPP,
@@ -216,16 +217,19 @@ class Lenia{
 				// this.mixShader.run(.9,this.imgGradientTex,this.gradientTexPP);
 				
 				//These lines make it so that for every action there must be an equal and opposite reaction
-				if(this.balanceMotion){
+				if(this.balanceMotion)
+					{
 					this.motionCapacityShader.run(m.leniaTexPP,this.motionTexPP);
 					this.motionShader.run(this.gradientTexPP,this.motionTexPP);
 				}
 				this.viscosityShader.run(m.leniaTexPP,m.veloTexPP);
 				this.veloShader.run(this.gradientTexPP,m.veloTexPP,imageTex,this.settings,this.imageMask);
 
-				if (this.settings.blendImageInLenia)
+				// if (this.settings.blendImageInLenia)
 				{
-					this.mixShader.run(.99,this.imgTex,m.leniaTexPP);
+					let wave = .5+.5*sin(time);
+					let blend = lerp(.998, 1.0, wave);
+					this.mixShader.run(blend,this.imgTex,m.leniaTexPP);
 				}
 			});
 			this.materials.forEach((m,i,arr)=>{

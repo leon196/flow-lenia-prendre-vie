@@ -141,10 +141,10 @@ class SubShader extends FragShader{
 
 				void main(){
 					vec2 pos2=(pos+1.)*.5;
-					float time = tick/60.;
+					float time = tick/30.;
 					float image = texture(imageTex, pos2).r;
-					float cycle = sin(time/4.);//*.5+.5;
-					outColor=texture(bTex,pos2)-texture(aTex,pos2)*cycle;
+					float cycle = step(.0, sin(time/4.));
+					outColor=texture(bTex,pos2)-texture(aTex,pos2)*.2*cycle;
 				}
 			`,
 		);

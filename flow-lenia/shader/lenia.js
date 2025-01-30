@@ -7,6 +7,7 @@ class LeniaShader extends FragShader{
 				precision highp float;
 				precision highp sampler2D;
 
+				uniform sampler2D imageTex;
 				uniform sampler2D leniaTex;
 				uniform vec2 size;
 				uniform sampler2D geneTex;
@@ -16,6 +17,7 @@ class LeniaShader extends FragShader{
 				uniform int geneGroupLength;
 				uniform float rand;
 				uniform float tick;
+				uniform float time;
 				in vec2 pos;
 
 				layout(location = 0) out vec4 outColor0;
@@ -176,9 +178,38 @@ class LeniaShader extends FragShader{
 					return growth(dist,wave[0],wave[1],wave[2]);
 				}
 
+				float gyroid(vec3 p)
+				{
+					return dot(sin(p),cos(p.yzx));
+				}
+
+				float fbm(vec3 p)
+				{
+					float r = 0.;
+					float a = 1.;
+					for (float i = 0.; i < 5.; ++i) {
+						r += gyroid(p/a)*a;
+						a /= 1.8;
+					}
+					return r;
+				}
+
 				vec4 getGenePart(int idx){
 					ivec2 geneCoord=getIdxCoord(idx,geneSize);
-					return texelFetch(geneTex,geneCoord,0);
+					// return texelFetch(geneTex,geneCoord,0);
+					vec2 pos2=(pos+1.)*.5;
+					float m = texture(imageTex, pos2).r;
+					// vec4 rng = vec4(pos2,0,0);//hash42(vec2(0, 3617.));
+					vec4 rng = hash42(vec2(0, 36517.));
+					float f = fbm(vec3(pos*5.,0.));
+					float wave = sin(time/30. + m * 0. + f * .0) * 0.5 + 0.5;
+					vec4 gene = texelFetch(geneTex,geneCoord,0);
+					wave = step(0.5, wave);
+					// gene = mix(gene, rng, wave);
+					// gene = rng;
+					// gene.z += 0.1 * wave;
+					gene -= 0.02;// * wave;
+					return gene;
 				}
 				float gene(int geneIdx,float[8] c){
 					int idx=geneIdx*geneGroupLength;
@@ -207,6 +238,8 @@ class LeniaShader extends FragShader{
 
 					ivec4 dna=ivec4(texelFetch(dnaTex,coord2,0));
 					// dna = (dna+ivec4(tick*100.)) % ivec4(1000);
+					// dna = dna + 357;
+					// dna = ivec4(6573);
 					if(dna==ivec4(-1)){
 						outColor0=vec4(0.,0.,0.,0.);
 						return;
@@ -232,9 +265,10 @@ class LeniaShader extends FragShader{
 			`,
 		);
 	}
-	run(geneGroupLength,geneTex,dnaTex,leniaTex,affinityTex){
+	run(geneGroupLength,imageTex,geneTex,dnaTex,leniaTex,affinityTex){
 		this.uniforms={
 			geneGroupLength,
+			imageTex:imageTex.tex,
 			leniaTex:leniaTex.tex,
 			size:leniaTex.size,
 			geneTex:geneTex.tex,
@@ -242,6 +276,7 @@ class LeniaShader extends FragShader{
 			dnaTex:dnaTex.tex,
 			dnaSize:dnaTex.size,
 			tick: Math.floor(time),
+			time: time,
 			rand: rand(),
 		};
 		this.attachments=[

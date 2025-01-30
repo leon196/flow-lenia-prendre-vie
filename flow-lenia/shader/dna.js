@@ -37,8 +37,10 @@ class GeneInitShader extends FragShader{
 					// outColor = hash42(vec2(123,seed));
 					// outColor = hash42(vec2(floor(mask*3.)*1234.,seed));
 					// outColor = hash42(vec2(floor(texture(imageMask, pos2).r*256.),rand+192.));
-					// float layer = floor(mask*2.);
-					outColor = hash42(vec2(0.,seed));
+					float layer = floor(mask*3.);
+					// float layer = step(.4, mask);
+					// outColor = hash42(vec2(layer*1234.,seed));
+					outColor = hash42(vec2(0.,seed));// + hash42(layer);
 					// outColor = hash42(vec2(7.,seed));
 					// outColor = hash42(vec2(floor(pos2.x*256.),rand));
 
