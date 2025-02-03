@@ -106,22 +106,19 @@ class Lenia{
 		this.zoomShader=new ZoomShader();
 		
 		this.balanceMotion=false;
+
+		const img=new Image();
+		img.src=imageSrc;
+
+		this.size = Vec(1,1);
+		this.dnaSelect = [0,0,0,0];
+		this.imageSource = {};
+		this.settings = {}
 		this.imageMask = twgl.createTexture(gl, { src: "./img/masks.png" });
 
 		this.materials.forEach((m,i,arr)=>{
 			this.geneInitShader.run(m.geneTexPP, m.imgTex, m.geneGroupLength,this.imageMask,19200);
 		});
-
-		const img=new Image();
-		img.src=imageSrc;
-
-		this.size=Vec(1,1);
-
-		this.dnaSelect = [0,0,0,0];
-		this.imageSource = {};
-		
-
-		this.settings = {}
 
 		img.onload=()=>{
 			this.size=Vec(img.width,img.height).scl(imageScale).flr();
@@ -165,18 +162,25 @@ class Lenia{
 			this.renderTex,
 			...this.materials.flatMap(x=>[...x])
 		].forEach(t=>t.resize(this.size.x,this.size.y));
+
+		// NOISE
 		this.materials.forEach((m,i,arr)=>{
 			this.noiseShader.run(m.leniaTexPP);
 		});
 
 		this.imageSource = twgl.createTexture(gl, { src: img });
+
+		// DNA
 		this.dnaInitShader.run(this.dnaTexPP,this.imageSource,this.materials[0].geneMaxLength,this.imageMask,123);
 	}
 	reset()
 	{
+		// NOISE
 		this.materials.forEach((m,i,arr)=>{
 			this.noiseShader.run(m.leniaTexPP);
 		});
+
+		// DNA
 		this.dnaInitShader.run(this.dnaTexPP,this.imageSource,this.materials[0].geneMaxLength,this.imageMask,123);
 	}
 	run(update,display,drawTex,imageTex){
@@ -184,15 +188,16 @@ class Lenia{
 
 		if (update)
 		{
+			// IMAGE
 			this.copyShader.run(imageTex,this.imgTex);
-			// this.copyShader.run({tex:this.imageMask},this.imgTex);
-			// const set = this.settings;
-			// this.zoomShader.run(set.zoomScale, set.zoomAt, imageTex, this.imgTex);
-			// console.log("copyShader")
+			
+			// IMAGE GRADIENT
 			this.gradientShader.run(this.imgTex,this.imgGradientTex);
 
 			this.materials.forEach((m,i,arr)=>{
 				let nextM=this.materials[(i+1)%this.materials.length];
+
+				// LENIA
 				this.leniaShader.run(
 					m.geneGroupLength,
 					this.imgTex,
@@ -201,40 +206,34 @@ class Lenia{
 					m.leniaTexPP,
 					nextM.affinityTexPP,
 				);
+
+				// LENIA GRADIENT
 				this.gradientShader.run(m.affinityTexPP,this.gradientTexPP);
 
-				// if (this.settings.blendImageInGradient)
-				{
-					this.subShader.run(this.imgGradientTex,this.gradientTexPP,this.imageMask);
-				}
+				// APPLY IMAGE TO GRADIENT
+				this.subShader.run(this.imgGradientTex,this.gradientTexPP,this.imageMask);
 
 				// this.mixShader.run(.9,this.imgGradientTex,this.gradientTexPP);
-				
-				//These lines make it so that for every action there must be an equal and opposite reaction
-				if(this.balanceMotion)
-					{
-					this.motionCapacityShader.run(m.leniaTexPP,this.motionTexPP);
-					this.motionShader.run(this.gradientTexPP,this.motionTexPP);
-				}
+
+				// VISCOSITY
 				this.viscosityShader.run(m.leniaTexPP,m.veloTexPP);
+
+				// VELOCITY
 				this.veloShader.run(this.gradientTexPP,m.veloTexPP,imageTex,this.settings,this.imageMask);
 
-				// if (this.settings.blendImageInLenia)
-				{
-					let wave = .5+.5*sin(time);
-					let blend = lerp(.998, 1.0, wave);
-					this.mixShader.run(blend,this.imgTex,m.leniaTexPP);
-				}
+				// BLEND IMAGE IN LENIA
+				let wave = .5+.5*sin(time);
+				let blend = lerp(.998, 1.0, wave);
+				this.mixShader.run(blend,this.imgTex,m.leniaTexPP);
 			});
+
+			// FLOW
 			this.materials.forEach((m,i,arr)=>{
-				// this.flowShader.run(i==0,this.materials[0].geneMaxLength,display.view,this.size,display.size,m.leniaTexPP,m.veloTexPP,this.dnaTexPP,drawTex,imageTex);
 				this.flowShader.run(i==0,this.materials[0].geneMaxLength,display.view,this.size,display.size,m.leniaTexPP,m.veloTexPP,this.dnaTexPP,drawTex,imageTex,this.settings);
 			});
 		}
 		
-		if(this.size.x>1.||this.size.y>1.){
-			let gene = this.materials[0].geneTexPP;
-			this.renderShader.run(display.view,this.size,display.size,this.materials,this.dnaTexPP,gene,this.gradientTexPP,imageTex,this.dnaSelect,this.settings,this.renderTex,this.imageMask);
-		}
+		// RENDER
+		this.renderShader.run(this.materials,this.renderTex);
 	}
 }
