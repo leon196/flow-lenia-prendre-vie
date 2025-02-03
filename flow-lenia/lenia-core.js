@@ -41,8 +41,6 @@ class Lenia{
 	constructor(){
 		this.materials=[
 			new LeniaMaterial(),
-			// new LeniaMaterial(),
-			// new LeniaMaterial(),
 		];
 		this.gradientTexPP=new TexturePingPong({
 			width: 1,
@@ -112,7 +110,6 @@ class Lenia{
 
 		this.materials.forEach((m,i,arr)=>{
 			this.geneInitShader.run(m.geneTexPP, m.imgTex, m.geneGroupLength,this.imageMask,19200);
-			// console.log("gene",m.geneTexPP.read(4,gl.RGBA,gl.FLOAT,Float32Array));
 		});
 
 		const img=new Image();
@@ -144,15 +141,12 @@ class Lenia{
 			this.imageSource = twgl.createTexture(gl, { src: img });
 			this.dnaInitShader.run(this.dnaTexPP,this.imageSource,this.materials[0].geneMaxLength,this.imageMask,123);
 			this.geneUpdate(315969);
-			// console.log("img.onload")
 		};
-		// console.log("dna",this.materials[0].read(4,gl.RGBA,gl.FLOAT,Float32Array));
 	}
 	geneUpdate(seed)
 	{
 		this.materials.forEach((m,i,arr)=>{
 			this.geneInitShader.run(m.geneTexPP, this.imageSource, m.geneGroupLength,this.imageMask,seed);
-			// console.log("gene",m.geneTexPP.read(4,gl.RGBA,gl.FLOAT,Float32Array));
 		});
 	}
 	dnaUpdate(seed)

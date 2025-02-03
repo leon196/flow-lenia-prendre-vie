@@ -39,40 +39,14 @@ class VeloShader extends FragShader{
 					float gSpeed = gradientSpeed;
 					float gray = texture(imageTex, pos2).r;
 					float tt = t/60.;
-					// gSpeed = mix(-.5,.5,sin(gray*3.-tt)*.5+.5)*1.;
 					float blend = texture(imageMask, pos2).r;
 					float cycle = abs(fract(blend+tt/10.)-.5)*2.;
-					// vSpeed = mix(vSpeed*.1, vSpeed*1.2, 1.-cycle);
-					// gSpeed = mix(gSpeed*.1, gSpeed, cycle);
-					// vSpeed = mix(0., 1., fract(gray*2.+tt));
-					// vSpeed = mix(0., 1., fract(gray*2.+tt));
-					// vSpeed = mix(0.0, 2., fract(pow(texture(imageTex, pos2).r, .4)*1.+t/60./10.));
-					// vSpeed = mix(0., 2., smoothstep(.0,.1,abs(fract(gray*2.-tt)-.5))-.3);
-					// vSpeed *= smoothstep(.5,.0,cycle-.1);
 					vec2 v=texelFetch(veloTex,coord2,0).xy
 						*vSpeed
 						+texelFetch(gradientTex,coord2,0).xy
 						*gSpeed;
-
-					// curl
-					vec2 e = vec2(.01,0);
-					vec3 p = vec3(pos * 2., tt/10.);
-					float x = (fbm(p+e.yxy)-fbm(p-e.yxy))/(2.*e.x);
-					float y = (fbm(p+e.xyy)-fbm(p-e.xyy))/(2.*e.x);
-					vec2 curl = vec2(x,-y);
-					// v += curl * .005 * (1.-cycle);
-					// v += curl * .02 * vSpeed;
-					// v = mix(v,-v,step(0.5, cycle));
-					// v += curl * .01 * mix(1.,-1.,step(0.5, cycle));
-
-					// v += vec2(cos(tt),sin(tt)) * .01;
 					v/=max(length(v),1.);
-					// v*=0.99;
 					outColor=vec4(v,0.,0.);
-					// if(t<20.){
-					// 	outColor=vec4(.5,.5,0.,0.);
-					// }
-					// outColor=vec4(0.,0.,0.,0.);
 				}
 			`,
 		);
