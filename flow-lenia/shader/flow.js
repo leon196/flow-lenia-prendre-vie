@@ -110,67 +110,22 @@ class FlowShader extends FragShader{
 							// }
 						}
 					}
-					if(total>0.){
+					if (total > 0.)
+					{
 						totalVelo/=total;
 					}
+
 					float t = time/1000.;
+					float activity = 0.001 * sin(texture(imageTex, pos2).r*6.+time/300.);
 
-					// curl
-					// vec2 e = vec2(.01,0);
-					// vec3 p = vec3(pos, length(pos)*.5) * 2.;
-					// float x = (fbm(p+e.yxy)-fbm(p-e.yxy))/(2.*e.x);
-					// float y = (fbm(p+e.xyy)-fbm(p-e.xyy))/(2.*e.x);
-					// vec2 curl = vec2(x,-y);
-
-					// totalVelo += vec2(cos(t),sin(t)) * .01;
-					// totalVelo += curl * .01;
-					// vec4 drawData=texture(canvas,pos2);//TODO
-					// float drawn=max((drawData.r*2.-1.)*drawData.w,-total);
-
-					// float affinity=texelFetch(leniaTex,coord2,0).y;
-					// outColor0=vec4(total,affinity,valOrigin.z,0.);
 					outColor0=vec4(max(
-						total//-.001
+						total+activity
 						+valDraw.y-valDraw.x,0.
 					),0.,0.,0.);
-					// outColor0=vec4(clamp(
-					// 	total*1.005-.001
-					// 	+valDraw.y-valDraw.x,0.,2.
-					// ),0.,0.,0.);
-					outColor1=vec4(totalVelo,0.,0.);//texelFetch(veloTex,coord2,0);
-					if(total==0.){
-						outColor2=vec4(-1.);
-					}else if(updateDna){
-						vec2 border=size-mutationBorderWidth;
-						vec2 borderPos=abs(pos*size);
-						bool spawn = borderPos.x>=border.x||borderPos.y>=border.y;
-						spawn = spawn && spawnEdge;
-						// bool spawn = hash13(vec3(floor(pos2*size), tick)) > .999;
-						// bool spawn = texture(imageTex, pos2).r > .9;
-						if (spawn)
-						{
-							//mutate
-							int initBlockSize=50;
-							// outColor2=floor(hash42(vec2(coord2/initBlockSize)+rand)*3.);
-							// outColor2=floor(hash42(vec2(coord2)+rand)*maxLength);
-							outColor2=texelFetch(dnaTex,bestCoord,0);//texelFetch(veloTex,coord2,0);
-							// outColor0.x+=mutationBorderStrength;
-						}
-						else
-						{
-							outColor2=texelFetch(dnaTex,bestCoord,0);//texelFetch(veloTex,coord2,0);
-							// outColor2+= 1.0;
-						}
-					}else{
-						outColor2=texelFetch(dnaTex,coord2,0);//texelFetch(veloTex,coord2,0);
-						// outColor2+= 10.0;
-					}
-					// outColor2 = fract(outColor2+0.01);
-					// outColor2 = mod(outColor2 + 10., 1000.);
-					// outColor=vec4(total+drawn,val.y,val.z,val.w);
-					// float tt = texture(imageTex, pos2).r + time;
-					// float cycle = abs(fract(tt)-.5)*2.;
-					// outColor0.x *= .99+.01*step(cycle, .1);
+					outColor1=vec4(totalVelo,0.,0.);
+					outColor2=texelFetch(dnaTex,coord2,0);
+					// outColor2-= 0.001;
+					// outColor2=mix(outColor2, hash42(vec2(0.,19200))-0.1, 0.99);
 				}
 			`,
 		);

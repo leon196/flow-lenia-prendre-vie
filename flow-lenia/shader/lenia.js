@@ -196,19 +196,20 @@ class LeniaShader extends FragShader{
 
 				vec4 getGenePart(int idx){
 					ivec2 geneCoord=getIdxCoord(idx,geneSize);
-					// return texelFetch(geneTex,geneCoord,0);
 					vec2 pos2=(pos+1.)*.5;
 					float m = texture(imageTex, pos2).r;
-					// vec4 rng = vec4(pos2,0,0);//hash42(vec2(0, 3617.));
 					vec4 rng = hash42(vec2(0, 36517.));
-					float f = fbm(vec3(pos*5.,0.));
-					float wave = sin(time/30. + m * 0. + f * .0) * 0.5 + 0.5;
+					float wave = sin(time/300. + m * 6.) * 0.5 + 0.5;
 					vec4 gene = texelFetch(geneTex,geneCoord,0);
-					wave = step(0.5, wave);
-					// gene = mix(gene, rng, wave);
-					// gene = rng;
-					// gene.z += 0.1 * wave;
-					gene -= 0.02;// * wave;
+					// // wave = step(0.5, wave);
+					// // float steps = 5.;
+					// // wave = floor(wave*steps)/steps;
+					// // gene -= 0.1 * wave
+					// vec4 seed = vec4(0);
+					// // seed.xy = gl_FragCoord.xy;
+					// seed.z = floor(m*5.);
+					// seed.w = floor(time/300.);
+					gene -= 0.05 * fract(m+time/60.+hash12(gl_FragCoord.xy));
 					return gene;
 				}
 				float gene(int geneIdx,float[8] c){

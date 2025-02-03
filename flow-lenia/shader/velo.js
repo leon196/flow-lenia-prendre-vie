@@ -16,6 +16,8 @@ class VeloShader extends FragShader{
 				in vec2 pos;
 				out vec4 outColor;
 
+				${SHADER_FUNCS.HASH}
+
 				float gyroid(vec3 p)
 				{
 					return dot(sin(p),cos(p.yzx));
@@ -37,10 +39,10 @@ class VeloShader extends FragShader{
 					ivec2 coord2=ivec2(pos2*size);
 					float vSpeed = velocitySpeed;
 					float gSpeed = gradientSpeed;
-					float gray = texture(imageTex, pos2).r;
-					float tt = t/60.;
-					float blend = texture(imageMask, pos2).r;
-					float cycle = abs(fract(blend+tt/10.)-.5)*2.;
+					vec3 seed = vec3(0);
+					seed.x = texture(imageMask,pos2).r;
+					seed.y = floor(t/300.);
+					// vSpeed *= mix(.8, 1., step(0.9, hash13(seed)));
 					vec2 v=texelFetch(veloTex,coord2,0).xy
 						*vSpeed
 						+texelFetch(gradientTex,coord2,0).xy
