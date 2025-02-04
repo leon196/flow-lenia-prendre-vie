@@ -145,7 +145,7 @@ class SubShader extends FragShader{
 					float image = texture(imageTex, pos2).r;
 					// float cycle = step(.0, sin(time/4.+image*6.28));
 					float cycle = step(abs(fract(time+image)-.5), .1);
-					outColor=texture(bTex,pos2)-texture(aTex,pos2)*cycle*.2;
+					outColor=texture(bTex,pos2)-texture(aTex,pos2)*cycle*.1;
 				}
 			`,
 		);
