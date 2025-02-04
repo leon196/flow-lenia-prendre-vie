@@ -47,7 +47,7 @@ anim.current = undefined;
 anim.start = () => {
     anim.elapsed = 0;
     anim.current = anim.zoomIN;
-    anim.target1 = [(Math.random()*2-1), (Math.random()*2-1)*.8];
+    anim.target1 = [(Math.random()*2-1), (Math.random()*2-1)*.6];
     setTimeout(() => {
         anim.elapsed = 0;
         anim.current = anim.zoomOUT;
