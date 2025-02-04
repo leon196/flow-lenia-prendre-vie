@@ -42,12 +42,12 @@ class VeloShader extends FragShader{
 					vec3 seed = vec3(0);
 					seed.x = texture(imageMask,pos2).r;
 					seed.y = floor(t/300.);
-					// vSpeed *= mix(.8, 1., step(0.9, hash13(seed)));
+					// gSpeed *= mix(.5, 1., step(0.5, hash13(seed)));
 					vec2 v=texelFetch(veloTex,coord2,0).xy
 						*vSpeed
 						+texelFetch(gradientTex,coord2,0).xy
 						*gSpeed;
-					v/=max(length(v),1.);
+					v/=max(length(v),0.99);
 					outColor=vec4(v,0.,0.);
 				}
 			`,

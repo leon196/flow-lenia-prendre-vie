@@ -52,11 +52,6 @@ let imageTex = new Texture({
 });
 let time = 0;
 
-// play/pause with key space
-let update = true;
-const key_space = 32;
-control.callbacks[key_space] = () => { update = !update; }
-
 // reset
 settings.reset = () => {
 	leniaLayers.forEach(layer => layer.reset());
@@ -77,16 +72,24 @@ leniaLayers.forEach(layer => layer.settings = settings);
 if (settings.zoom) anim.start();
 
 // gui
-var gui = new dat.GUI();
-gui.add(settings, 'velocitySpeed', 0, 1, 0.01);
-gui.add(settings, 'gradientSpeed', 0, 1, 0.01);
-gui.add(settings, 'zoom').onChange(settings.onZoom);
-gui.add(settings, 'reset'); 
-gui.close();
+// var gui = new dat.GUI();
+// gui.add(settings, 'velocitySpeed', 0, 1, 0.01);
+// gui.add(settings, 'gradientSpeed', 0, 1, 0.01);
+// gui.add(settings, 'zoom').onChange(settings.onZoom);
+// gui.add(settings, 'reset'); 
+// gui.close();
 
 lenia.geneUpdate(315969);
 
 let elapsed = 0;
+let last_zoom_elapsed = 0;
+let delay_before_zoom = 10;
+
+// play/pause zoom with key space
+let update = true;
+const key_space = 32;
+control.callbacks[key_space] = () => { update = !update; }
+// control.callbacks[key_space] = () => { anim.start() }
 
 let frameAnim=animate((timeElapsed)=>{
 	time++;
@@ -94,7 +97,16 @@ let frameAnim=animate((timeElapsed)=>{
 	const dt = timeElapsed - elapsed;
 	elapsed = timeElapsed;
 
-	if (anim.current != undefined && settings.zoom) {
+	last_zoom_elapsed += dt;
+	if (last_zoom_elapsed > delay_before_zoom) {
+		last_zoom_elapsed = 0;
+		delay_before_zoom = 100 + Math.random() * 100
+		if (anim.current == undefined) {
+			anim.start();
+		}
+	}
+
+	if (anim.current != undefined) {
 		anim.current(dt);
 	}
 	

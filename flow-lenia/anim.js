@@ -11,14 +11,14 @@ function easeInOutSine(x) {
 }
 
 const anim = {
-    duration: 80,
-    duration2: 40,
-    scale1: 10,
+    duration:80,
+    duration2: 80,
+    scale1: 5,
     target1: [0,0],
     elapsed: 0,
 }
 
-anim.zoom1 = (dt) => {
+anim.zoomIN = (dt) => {
     anim.elapsed += dt;
     let time = clamp(anim.elapsed/anim.duration, 0, 1);
     let t = easeInOutSine(time);
@@ -27,7 +27,7 @@ anim.zoom1 = (dt) => {
     offset[1] = lerp(0, anim.target1[1], t);
 }
 
-anim.zoom2 = (dt) => {
+anim.zoomOUT = (dt) => {
     anim.elapsed += dt;
     let time = clamp(anim.elapsed/anim.duration2, 0, 1);
     let t = easeInOutSine(time);
@@ -36,7 +36,7 @@ anim.zoom2 = (dt) => {
     offset[1] = lerp(anim.target1[1], 0, t);
 }
 
-anim.zoom3 = (dt) => {
+anim.idle = (dt) => {
     // anim.elapsed += dt;
     // let time = clamp(anim.elapsed/anim.duration, 0, 1);
     // zoom = lerp(1, 1, time);
@@ -46,14 +46,14 @@ anim.current = undefined;
 
 anim.start = () => {
     anim.elapsed = 0;
-    anim.current = anim.zoom1;
-    anim.target1 = [(Math.random()*2-1), (Math.random()*2-1)*0.5];
+    anim.current = anim.zoomIN;
+    anim.target1 = [(Math.random()*2-1), (Math.random()*2-1)*.8];
     setTimeout(() => {
         anim.elapsed = 0;
-        anim.current = anim.zoom2;
+        anim.current = anim.zoomOUT;
         setTimeout(() => {
             anim.elapsed = 0;
-            anim.current = anim.zoom3;
+            anim.current = anim.idle;
             setTimeout(() => {
                 anim.elapsed = 0;
                 anim.current = undefined;

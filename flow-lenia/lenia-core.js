@@ -238,11 +238,11 @@ class Lenia{
 
 			// FLOW
 			this.materials.forEach((m,i,arr)=>{
-				this.flowShader.run(i==0,this.materials[0].geneMaxLength,display.view,this.size,display.size,m.leniaTexPP,m.veloTexPP,this.dnaTexPP,drawTex,imageTex,this.settings);
+				this.flowShader.run(i==0,this.materials[0].geneMaxLength,display.view,this.size,display.size,m.leniaTexPP,m.veloTexPP,this.dnaTexPP,drawTex,imageTex,this.settings,zoom);
 			});
 		}
 		
 		// RENDER
-		this.renderShader.run(this.materials,this.renderTex);
+		this.renderShader.run(this.materials,this.renderTex,imageTex);
 	}
 }

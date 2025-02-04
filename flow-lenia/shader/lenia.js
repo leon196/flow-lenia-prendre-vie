@@ -209,7 +209,8 @@ class LeniaShader extends FragShader{
 					// // seed.xy = gl_FragCoord.xy;
 					// seed.z = floor(m*5.);
 					// seed.w = floor(time/300.);
-					gene -= 0.05 * fract(m+time/60.+hash12(gl_FragCoord.xy));
+					float spread = .5+.5*sin(time/2000.);
+					gene -= 0.05 * fract(m*spread+time/1000.+.2*hash12(gl_FragCoord.xy));
 					return gene;
 				}
 				float gene(int geneIdx,float[8] c){

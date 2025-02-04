@@ -23,6 +23,7 @@ class FlowShader extends FragShader{
 				uniform vec2 canvasSize;
 				uniform vec2 camPos;
 				uniform float camZoom;
+				uniform float zoom;
 				uniform float time;
 				uniform bool spawnEdge;
 
@@ -115,11 +116,16 @@ class FlowShader extends FragShader{
 						totalVelo/=total;
 					}
 
-					float t = time/1000.;
-					float activity = 0.001 * sin(texture(imageTex, pos2).r*6.+time/300.);
+					float t = time/600.;
+					float cycle = sin(t)*.5+.5;
+					float mask = texture(imageTex, pos2).r;
+					// float activity = 0.001 * sin(texture(imageTex, pos2).r*6.+time/300.);
+					float activity = 1. - 0.001 * (1.-mask) * cycle;
+
+					activity = mix(activity, 1., clamp(zoom-1.,0.,1.));
 
 					outColor0=vec4(max(
-						total+activity
+						total*activity+0.001*(1.-cycle)*(1.-mask)
 						+valDraw.y-valDraw.x,0.
 					),0.,0.,0.);
 					outColor1=vec4(totalVelo,0.,0.);
@@ -130,7 +136,7 @@ class FlowShader extends FragShader{
 			`,
 		);
 	}
-	run(updateDna,maxDnaLength,cam,imgSize,canvasSize,leniaTexPP,veloTexPP,dnaTexPP,drawTex,imageTex,settings){
+	run(updateDna,maxDnaLength,cam,imgSize,canvasSize,leniaTexPP,veloTexPP,dnaTexPP,drawTex,imageTex,settings,zoom){
 		this.uniforms={
 			camZoom:cam.zoom,
 			camPos:cam.pos,
@@ -150,6 +156,7 @@ class FlowShader extends FragShader{
 			mutationBorderWidth:(time%mutationBorderDelay==0)?mutationBorderWidth:0,
 			mutationBorderStrength,
 			spawnEdge:settings.spawnEdge,
+			zoom,
 		};
 		this.attachments=[
 			{
