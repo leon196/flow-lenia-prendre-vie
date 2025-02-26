@@ -12,6 +12,7 @@ class VeloShader extends FragShader{
 				uniform sampler2D imageMask;
 				uniform vec2 size;
 				uniform float t;
+				uniform float time;
 				uniform float gradientSpeed, velocitySpeed;
 				in vec2 pos;
 				out vec4 outColor;
@@ -43,11 +44,21 @@ class VeloShader extends FragShader{
 					// seed.x = texture(imageMask,pos2).r;
 					// seed.y = floor(t/300.);
 					// gSpeed *= mix(.5, 1., step(0.5, hash13(seed)));
+
+					float rng = hash12(gl_FragCoord.xy);
+					float m = texture(imageTex, pos2).r;
+					float wave = sin(time/300. + m * 6.) * 0.5 + 0.5;
+					float spread = .5+.5*sin(time/2000.);
+					float f = fract(m*spread+time/1000.+.2*rng);
+					// f = 1.-f;
+					float speed = vSpeed*2.;//(1.+step(.9, f)*2.);
+
 					vec2 v=texelFetch(veloTex,coord2,0).xy
-						*vSpeed
+						*speed
 						+texelFetch(gradientTex,coord2,0).xy
 						*gSpeed;
-					v/=max(length(v),0.99);
+					// v.x += 0.5;
+					v/=max(length(v),.99);
 					outColor=vec4(v,0.,0.);
 				}
 			`,
@@ -61,6 +72,7 @@ class VeloShader extends FragShader{
 			imageTex:imageTex.tex,
 			size:veloTexPP.size,
 			t:this.t,
+			time:time,
 			gradientSpeed:settings.gradientSpeed,
 			velocitySpeed:settings.velocitySpeed,
 			imageMask:imageMask,

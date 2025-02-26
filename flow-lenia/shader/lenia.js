@@ -217,7 +217,7 @@ class LeniaShader extends FragShader{
 					// gene -= 0.05 * f;//sin(f*3.1415);// * (.4+.6*rng.x);
 					// return gene;
 					
-					gene -= 0.05 * f;
+					// gene -= 0.05 * f;
 					return gene;
 				}
 				float gene(int geneIdx,float[8] c){

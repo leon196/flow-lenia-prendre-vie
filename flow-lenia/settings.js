@@ -16,6 +16,6 @@ let mutationBorderDelay=100;
 
 const settings = {
 	velocitySpeed: 1,
-	gradientSpeed: 0.5,
+	gradientSpeed: 1,
 	zoom: false,
 }

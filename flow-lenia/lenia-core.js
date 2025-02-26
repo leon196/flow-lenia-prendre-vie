@@ -92,9 +92,9 @@ class Lenia{
 		this.noiseShader=new NoiseShader();
 		this.leniaShader=new LeniaShader();
 		this.gradientShader=new GradientShader();
-		this.motionCapacityShader=new MotionCapacityShader(3);
-		this.motionShader=new MotionShader(3);
-		this.viscosityShader=new ViscosityShader(3);
+		this.motionCapacityShader=new MotionCapacityShader(4);
+		this.motionShader=new MotionShader(4);
+		this.viscosityShader=new ViscosityShader(4);
 		this.veloShader=new VeloShader();
 		this.flowShader=new FlowShader();
 		this.renderShader=new RenderShader();

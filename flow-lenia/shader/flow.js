@@ -117,10 +117,10 @@ class FlowShader extends FragShader{
 					}
 
 					float t = time/600.;
-					float cycle = sin(t)*.5+.5;
 					float mask = texture(imageTex, pos2).r;
+					float cycle = sin(t+mask*6.)*.5+.5;
 					// float activity = 0.001 * sin(texture(imageTex, pos2).r*6.+time/300.);
-					float activity = 1. - 0.001 * (1.-mask) * cycle;
+					float activity = 1. - 0.01 * (1.-mask) * cycle;
 
 					activity = mix(activity, 1., clamp(zoom-1.,0.,1.));
 
