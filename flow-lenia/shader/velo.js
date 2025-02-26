@@ -39,9 +39,9 @@ class VeloShader extends FragShader{
 					ivec2 coord2=ivec2(pos2*size);
 					float vSpeed = velocitySpeed;
 					float gSpeed = gradientSpeed;
-					vec3 seed = vec3(0);
-					seed.x = texture(imageMask,pos2).r;
-					seed.y = floor(t/300.);
+					// vec3 seed = vec3(0);
+					// seed.x = texture(imageMask,pos2).r;
+					// seed.y = floor(t/300.);
 					// gSpeed *= mix(.5, 1., step(0.5, hash13(seed)));
 					vec2 v=texelFetch(veloTex,coord2,0).xy
 						*vSpeed

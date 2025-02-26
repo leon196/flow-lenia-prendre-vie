@@ -118,6 +118,8 @@ class Lenia{
 		this.imageSource = {};
 		this.settings = {}
 		this.imageMask = twgl.createTexture(gl, { src: "./img/masks.png" });
+		this.imageMask2 = twgl.createTexture(gl, { src: "./img/masks2.png" });
+		this.imageMaskBlur = twgl.createTexture(gl, { src: "./img/masks-blur.jpg" });
 
 		this.materials.forEach((m,i,arr)=>{
 			this.geneInitShader.run(m.geneTexPP, m.imgTex, m.geneGroupLength,this.imageMask,19200);
@@ -204,6 +206,7 @@ class Lenia{
 				this.leniaShader.run(
 					m.geneGroupLength,
 					this.imgTex,
+					this.imageMask2,
 					m.geneTexPP,
 					this.dnaTexPP,
 					m.leniaTexPP,

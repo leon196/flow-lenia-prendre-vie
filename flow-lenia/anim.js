@@ -13,7 +13,7 @@ function easeInOutSine(x) {
 const anim = {
     duration:80,
     duration2: 80,
-    scale1: 5,
+    scale1: 4,
     target1: [0,0],
     elapsed: 0,
 }

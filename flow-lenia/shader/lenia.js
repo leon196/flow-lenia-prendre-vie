@@ -8,6 +8,7 @@ class LeniaShader extends FragShader{
 				precision highp sampler2D;
 
 				uniform sampler2D imageTex;
+				uniform sampler2D imageTex2;
 				uniform sampler2D leniaTex;
 				uniform vec2 size;
 				uniform sampler2D geneTex;
@@ -195,22 +196,28 @@ class LeniaShader extends FragShader{
 				}
 
 				vec4 getGenePart(int idx){
+					// ivec2 geneCoord=getIdxCoord(idx,geneSize);
+					// vec4 gene = texelFetch(geneTex,geneCoord,0);
 					ivec2 geneCoord=getIdxCoord(idx,geneSize);
+					// vec2 pos2=(pos+1.)*.5;
 					vec2 pos2=(pos+1.)*.5;
+					float rng = hash12(gl_FragCoord.xy);
 					float m = texture(imageTex, pos2).r;
-					vec4 rng = hash42(vec2(0, 36517.));
 					float wave = sin(time/300. + m * 6.) * 0.5 + 0.5;
 					vec4 gene = texelFetch(geneTex,geneCoord,0);
-					// // wave = step(0.5, wave);
-					// // float steps = 5.;
-					// // wave = floor(wave*steps)/steps;
-					// // gene -= 0.1 * wave
-					// vec4 seed = vec4(0);
-					// // seed.xy = gl_FragCoord.xy;
-					// seed.z = floor(m*5.);
-					// seed.w = floor(time/300.);
 					float spread = .5+.5*sin(time/2000.);
-					gene -= 0.05 * fract(m*spread+time/1000.+.2*hash12(gl_FragCoord.xy));
+					float f = fract(m*spread+time/1000.+.2*rng);
+					// float m = texture(imageTex2, pos2+jitter*.1).r;
+					// // vec4 rng = hash42(vec2(0., 36517.));
+					// // float wave = sin(time/300. + m * 6.) * 0.5 + 0.5;
+					// float spread = .5+.5*sin(time/2000.);
+					vec2 jitter = hash42(gl_FragCoord.xy).xy-.5;
+					float m2 = texture(imageTex2, pos2+jitter*.1).r;
+					float f2 = fract(m+time/1000.+rng*.1+m2*.1);//+.1*hash12(gl_FragCoord.xy));
+					// gene -= 0.05 * f;//sin(f*3.1415);// * (.4+.6*rng.x);
+					// return gene;
+					
+					gene -= 0.05 * f;
 					return gene;
 				}
 				float gene(int geneIdx,float[8] c){
@@ -267,10 +274,11 @@ class LeniaShader extends FragShader{
 			`,
 		);
 	}
-	run(geneGroupLength,imageTex,geneTex,dnaTex,leniaTex,affinityTex){
+	run(geneGroupLength,imageTex,imageTex2,geneTex,dnaTex,leniaTex,affinityTex){
 		this.uniforms={
 			geneGroupLength,
 			imageTex:imageTex.tex,
+			imageTex2:imageTex2,
 			leniaTex:leniaTex.tex,
 			size:leniaTex.size,
 			geneTex:geneTex.tex,
