@@ -120,12 +120,13 @@ class FlowShader extends FragShader{
 					float mask = texture(imageTex, pos2).r;
 					float cycle = sin(t+mask*6.)*.5+.5;
 					// float activity = 0.001 * sin(texture(imageTex, pos2).r*6.+time/300.);
-					float activity = 1. - 0.01 * (1.-mask) * cycle;
-
-					activity = mix(activity, 1., clamp(zoom-1.,0.,1.));
+					float starve = 0.01 * (1.-mask) * cycle;
+					float activity = 1. - starve;
+					float extra_food = 0.001*(mask);
+					// activity = mix(activity, 1., clamp(zoom-1.,0.,1.));
 
 					outColor0=vec4(max(
-						total*activity+0.001*(1.-cycle)*(1.-mask)
+						total*activity+extra_food
 						+valDraw.y-valDraw.x,0.
 					),0.,0.,0.);
 					outColor1=vec4(totalVelo,0.,0.);

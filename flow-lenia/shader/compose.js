@@ -21,7 +21,7 @@ class ComposeShader extends FragShader{
 
 				void main(){
                     vec2 p = pos;
-                    p = (p-offset*4.)/zoom;
+                    p = (p-offset*zoom)/zoom;
 					vec2 uv=(p+1.)*.5;
 					outColor = texture(leniaTex1, uv);
 					// if (multiLayers) {
