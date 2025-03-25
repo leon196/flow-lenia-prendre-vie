@@ -48,8 +48,9 @@ class VeloShader extends FragShader{
 					float rng = hash12(gl_FragCoord.xy);
 					float m = texture(imageTex, pos2).r;
 					float wave = sin(time/30. + m * 6.) * 0.5 + 0.5;
-					float spread = .2*sin(time/200.);
+					float spread = .2*sin(time/300.);
 					float f = fract(m*spread+time/100.);
+					f = pow(f, 3.);
 					f = 1.-f;
 					float speed = vSpeed*(1.3+.8*f);//(1.+(1.-f));//(1.+step(.9, f)*2.);
 

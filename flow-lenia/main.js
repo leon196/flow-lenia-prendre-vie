@@ -97,14 +97,14 @@ let frameAnim=animate((timeElapsed)=>{
 	const dt = timeElapsed - elapsed;
 	elapsed = timeElapsed;
 
-	// last_zoom_elapsed += dt;
-	// if (last_zoom_elapsed > delay_before_zoom) {
-	// 	last_zoom_elapsed = 0;
-	// 	delay_before_zoom = 100 + Math.random() * 100
-	// 	if (anim.current == undefined) {
-	// 		anim.start();
-	// 	}
-	// }
+	last_zoom_elapsed += dt;
+	if (last_zoom_elapsed > delay_before_zoom) {
+		last_zoom_elapsed = 0;
+		delay_before_zoom = 100 + Math.random() * 100
+		if (anim.current == undefined) {
+			anim.start();
+		}
+	}
 
 	if (anim.current != undefined) {
 		anim.current(dt);
