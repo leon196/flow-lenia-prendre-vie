@@ -54,7 +54,7 @@ function update(milliseconds)
 	control.resetDelta();
 	display.clear();
 	canvasTex.update(canvas);
-	anim.update(dt)
+	// anim.update(dt)
 
 	lenia.run(settings.play, display, canvasTex, imageTex);
 	composeShader.run(display.view, lenia.size, display.size);
