@@ -45,6 +45,5 @@ class NoiseShader extends FragShader{
 			}
 		];
 		super.run();
-		this.time++;
 	}
 }

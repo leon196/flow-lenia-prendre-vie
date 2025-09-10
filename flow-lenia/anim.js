@@ -16,12 +16,14 @@ const anim = {
     scale1: 2,
     target1: [0,0],
     elapsed: 0,
+    last_time: 0,
+    delay: 10,
 }
 
 anim.zoomIN = (dt) => {
     anim.elapsed += dt;
-    let time = clamp(anim.elapsed/anim.duration, 0, 1);
-    let t = easeInOutSine(time);
+    let tt = clamp(anim.elapsed/anim.duration, 0, 1);
+    let t = easeInOutSine(tt);
     zoom = lerp(1, anim.scale1, t);
     offset[0] = lerp(0, anim.target1[0], t);
     offset[1] = lerp(0, anim.target1[1], t);
@@ -29,8 +31,8 @@ anim.zoomIN = (dt) => {
 
 anim.zoomOUT = (dt) => {
     anim.elapsed += dt;
-    let time = clamp(anim.elapsed/anim.duration2, 0, 1);
-    let t = easeInOutSine(time);
+    let tt = clamp(anim.elapsed/anim.duration2, 0, 1);
+    let t = easeInOutSine(tt);
     zoom = lerp(anim.scale1, 1, t);
     offset[0] = lerp(anim.target1[0], 0, t);
     offset[1] = lerp(anim.target1[1], 0, t);
@@ -38,8 +40,8 @@ anim.zoomOUT = (dt) => {
 
 anim.idle = (dt) => {
     // anim.elapsed += dt;
-    // let time = clamp(anim.elapsed/anim.duration, 0, 1);
-    // zoom = lerp(1, 1, time);
+    // let tt = clamp(anim.elapsed/anim.duration, 0, 1);
+    // zoom = lerp(1, 1, tt);
 }
 
 anim.current = undefined;
@@ -62,4 +64,15 @@ anim.start = () => {
         }, anim.duration2 * 1000);
 
     }, anim.duration * 1000);
+}
+
+anim.update = (dt) => {
+	anim.last_time += dt;
+	if (anim.last_time > anim.delay)
+	{
+		anim.last_time = 0;
+		anim.delay = 100 + Math.random() * 100
+		if (anim.current == undefined) anim.start();
+	}
+	if (anim.current != undefined) anim.current(dt);
 }

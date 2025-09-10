@@ -11,7 +11,7 @@ class VeloShader extends FragShader{
 				uniform sampler2D imageTex;
 				uniform sampler2D imageMask;
 				uniform vec2 size;
-				uniform float t;
+				uniform float tick;
 				uniform float time;
 				uniform float gradientSpeed, velocitySpeed;
 				in vec2 pos;
@@ -72,13 +72,12 @@ class VeloShader extends FragShader{
 			veloTex:veloTexPP.tex,
 			imageTex:imageTex.tex,
 			size:veloTexPP.size,
-			t:this.t,
-			time:elapsed,
+			tick,
+			time,
 			gradientSpeed:settings.gradientSpeed,
 			velocitySpeed:settings.velocitySpeed,
 			imageMask:imageMask,
 		};
-		this.t++;
 		this.attachments=[
 			{
 				attachment:veloTexPP.flip().tex,

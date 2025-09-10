@@ -149,7 +149,6 @@ class SubShader extends FragShader{
 				}
 			`,
 		);
-		this.tick = 0;
 	}
 	run(aTex,bTexPP,image){
 		this.uniforms={
@@ -158,7 +157,7 @@ class SubShader extends FragShader{
 			bSize:bTexPP.size,
 			aSize:aTex.size,
 			imageTex:image,
-			tick:this.tick,
+			tick,
 		};
 		this.attachments=[
 			{
@@ -166,7 +165,6 @@ class SubShader extends FragShader{
 				...sizeObj(bTexPP.size)
 			}
 		];
-		this.tick++;
 		super.run();
 	}
 }

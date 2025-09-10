@@ -65,7 +65,6 @@ class GeneInitShader extends FragShader{
 			}
 		];
 		super.run();
-		this.time++;
 	}
 }
 class DnaInitShader extends FragShader{
@@ -130,6 +129,5 @@ class DnaInitShader extends FragShader{
 			}
 		];
 		super.run();
-		this.time++;
 	}
 }

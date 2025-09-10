@@ -228,15 +228,7 @@ class Lenia{
 				this.veloShader.run(this.gradientTexPP,m.veloTexPP,imageTex,this.settings,this.imageMask);
 
 				// BLEND IMAGE IN LENIA
-				// let wave = .5+.5*sin(time);
 				this.blend_elapsed += 1/60.
-				// if (this.blend_elapsed > this.blend_delay) {
-				// 	this.blend = Math.random();
-				// 	this.blend_delay = 1.+3.*Math.random();
-				// 	this.blend_elapsed = 0;
-				// }
-				// let blend = lerp(.998, 1.0, this.blend);
-				// this.mixShader.run(blend,this.imgTex,m.leniaTexPP);
 			});
 
 			// FLOW

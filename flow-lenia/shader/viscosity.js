@@ -53,16 +53,15 @@ class ViscosityShader extends FragShader{
 				}
 			`,
 		);
-		this.time = 0.;
 	}
 	run(leniaTex,veloTexPP){
 		this.uniforms={
 			leniaTex:leniaTex.tex,
 			veloTex:veloTexPP.tex,
 			size:leniaTex.size,
-			time:this.time,
+			time,
+			tick,
 		};
-		this.time += 1./60.;
 		this.attachments=[
 			{
 				attachment:veloTexPP.flip().tex,

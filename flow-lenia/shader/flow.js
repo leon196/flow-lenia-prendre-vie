@@ -13,7 +13,6 @@ class FlowShader extends FragShader{
 				uniform sampler2D imageTex;
 				uniform vec2 size;
 				uniform bool updateDna;
-				uniform float tick;
 				uniform float rand;
 				uniform float maxLength;
 				uniform float mutationBorderWidth;
@@ -25,6 +24,7 @@ class FlowShader extends FragShader{
 				uniform float camZoom;
 				uniform float zoom;
 				uniform float time;
+				uniform float tick;
 				uniform bool spawnEdge;
 
 				in vec2 pos;
@@ -116,7 +116,7 @@ class FlowShader extends FragShader{
 						totalVelo/=total;
 					}
 
-					float t = time/600.;
+					float t = tick/600.;
 					float mask = texture(imageTex, pos2).r;
 					float cycle = sin(t+mask*6.)*.5+.5;
 					// float activity = 0.001 * sin(texture(imageTex, pos2).r*6.+time/300.);
@@ -151,10 +151,10 @@ class FlowShader extends FragShader{
 			size:leniaTexPP.size,
 			updateDna,
 			rand:rand(),
-			time: time,
-			tick: Math.floor(time*60),
+			time,
+			tick,
 			maxLength:maxDnaLength,
-			mutationBorderWidth:(time%mutationBorderDelay==0)?mutationBorderWidth:0,
+			mutationBorderWidth:(tick%mutationBorderDelay==0)?mutationBorderWidth:0,
 			mutationBorderStrength,
 			spawnEdge:settings.spawnEdge,
 			zoom,

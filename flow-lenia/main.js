@@ -1,75 +1,40 @@
-// Create global page styles
-createStyles(scss`&{
-	background-color:black;
-	overflow:hidden;
-	canvas{
-		position:absolute;
-		width:100vw;
-		height:100vh;
-	}
-	.gl{
-		opacity:1;
-	}
-}`());
 
-let canvasElm=newElm("canvas");
-let glCanvasElm=newElm("canvas");
-let gl=glCanvasElm.getContext("webgl2",{
-	premultipliedAlpha: true,
-	preserveDrawingBuffer: true,
-});
+
+let canvas = newElm("canvas");
+let glCanvas = newElm("canvas");
+let gl = glCanvas.getContext("webgl2",{
+	premultipliedAlpha: true, preserveDrawingBuffer: true });
 
 gl.getExtension("EXT_color_buffer_float");
 gl.getExtension("EXT_float_blend");
 
 // Populate page html
-let body=html`
-	${addClass("canvas",canvasElm)}
-	${addClass("gl",glCanvasElm)}
-`();
+let body = html`${addClass("canvas", canvas)} ${addClass("gl", glCanvas)}`();
 addElm(body,document.body);
 body.disolve();
 
-let display = new CanvasDisplay(canvasElm);
-display.view = new Cam(Vec(0,0),1.);
-let control = new Control();
-control.connect(canvasElm);
-
-let shaderManager = new ShaderManager();
 let lenia = new Lenia();
-let leniaLayers = [lenia];
-
-let canvasTex=new Texture({
-	src: canvasElm,
-	minMag: gl.NEAREST,
-	wrap: gl.REPEAT
-});
-
+let shaderManager = new ShaderManager();
 let composeShader = new ComposeShader();
+let canvasTex = new Texture({ src: canvas, minMag: gl.NEAREST, wrap: gl.REPEAT });
+let imageTex = new Texture({ src: imageSrc });
+let control = new Control();
+let display = new CanvasDisplay(canvas);
 
-let imageTex = new Texture({
-	src: imageSrc
-});
 let time = 0;
-
-// reset
-settings.reset = () => {
-	leniaLayers.forEach(layer => layer.reset());
-};
-
-// zoom
+let tick = 0;
 let zoom = 1.;
 let offset = [0,0];
 
-settings.onZoom = () => {
-	if (anim.current == undefined) {
-		anim.start();
-	}
-};
-
-leniaLayers.forEach(layer => layer.settings = settings);
-
+display.view = new Cam(Vec(0,0),1.);
+control.connect(canvas);
+control.callbacks[32] = () => { settings.play = !settings.play; }
+settings.reset = () => lenia.reset()
+settings.onZoom = () => { if (anim.current == undefined) { anim.start(); } };
 if (settings.zoom) anim.start();
+
+lenia.settings = settings;
+lenia.geneUpdate(315969);
 
 // gui
 // var gui = new dat.GUI();
@@ -79,44 +44,22 @@ if (settings.zoom) anim.start();
 // gui.add(settings, 'reset'); 
 // gui.close();
 
-lenia.geneUpdate(315969);
+function update(milliseconds)
+{	
+	let seconds = milliseconds/1000.0;
+	let dt = seconds - time;
+	time = seconds;
+	tick++;
 
-let elapsed = 0;
-let last_zoom_elapsed = 0;
-let delay_before_zoom = 10;
-
-// play/pause zoom with key space
-let update = true;
-const key_space = 32;
-control.callbacks[key_space] = () => { update = !update; }
-// control.callbacks[key_space] = () => { anim.start() }
-
-let frameAnim=animate((timeElapsed)=>{
-	time++;
-
-	const dt = timeElapsed - elapsed;
-	elapsed = timeElapsed;
-
-	last_zoom_elapsed += dt;
-	if (last_zoom_elapsed > delay_before_zoom) {
-		last_zoom_elapsed = 0;
-		delay_before_zoom = 100 + Math.random() * 100
-		if (anim.current == undefined) {
-			anim.start();
-		}
-	}
-
-	if (anim.current != undefined) {
-		anim.current(dt);
-	}
-	
 	control.resetDelta();
-
 	display.clear();
-	canvasTex.update(canvasElm);
+	canvasTex.update(canvas);
+	anim.update(dt)
 
-	leniaLayers.forEach(layer => layer.run(update,display,canvasTex,imageTex));
+	lenia.run(settings.play, display, canvasTex, imageTex);
+	composeShader.run(display.view, lenia.size, display.size);
 
-	composeShader.run(display.view, lenia.size, display.size, zoom, offset, leniaLayers, settings);
+	requestAnimationFrame(update);
+}
 
-},1,true).start();
+requestAnimationFrame(update);
